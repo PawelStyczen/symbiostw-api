@@ -1,0 +1,6 @@
+@DanceApi_HostAddress = http://localhost:5077
+
+GET {{DanceApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
