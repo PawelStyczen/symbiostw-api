@@ -48,7 +48,8 @@ builder.Services.AddSwaggerGen(options =>
 
     options.OperationFilter<SwaggerFileOperationFilter>();
 });
-
+var jwtKey = builder.Configuration["Jwt:Key"];
+Console.WriteLine("Jwt key length: " + jwtKey?.Length);
 // === DB + Identity ===
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
