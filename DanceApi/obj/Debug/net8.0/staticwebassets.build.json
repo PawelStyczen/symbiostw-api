@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "AJX66TBPxa+ogLMJGyqkR4Yc6fBNbsQ82fPMEOQokRs=",
+  "Hash": "cgCKLrFjCoOSxS5SbICIxwjQC1oH1oGXX6njDsf7xEc=",
   "Source": "DanceApi",
   "BasePath": "_content/DanceApi",
   "Mode": "Default",
@@ -1649,6 +1649,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/uploads/c838ec9c-95bf-4f46-92db-ff4eb7c14393_dzieci.png"
+    },
+    {
+      "Identity": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/ca837f70-36aa-42c1-badd-a2a9a3bc0da9_Zrzut ekranu 2025-08-8 o 15.53.21.png",
+      "SourceId": "DanceApi",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/",
+      "BasePath": "_content/DanceApi",
+      "RelativePath": "uploads/ca837f70-36aa-42c1-badd-a2a9a3bc0da9_Zrzut ekranu 2025-08-8 o 15.53.21.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/uploads/ca837f70-36aa-42c1-badd-a2a9a3bc0da9_Zrzut ekranu 2025-08-8 o 15.53.21.png"
     },
     {
       "Identity": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/cea51bf5-c504-49ae-a27e-8e7b07c0945a_Pierwszy-taniec-2-107954331.jpeg",

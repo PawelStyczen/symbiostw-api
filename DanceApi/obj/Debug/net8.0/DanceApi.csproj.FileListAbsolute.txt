@@ -176,3 +176,4 @@
 /Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/DanceApi.pdb
 /Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/DanceApi.genruntimeconfig.cache
 /Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/ref/DanceApi.dll
+/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/DanceApi.sourcelink.json
