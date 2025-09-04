@@ -137,8 +137,10 @@ using (var scope = app.Services.CreateScope())
         var userManager = services.GetRequiredService<UserManager<User>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
+        
+        Console.WriteLine("🔗 Connected to DB: " + context.Database.GetDbConnection().ConnectionString);
         await context.Database.MigrateAsync();
-
+    
         if (!env.IsProduction())
         {
             var seeder = new DatabaseSeeder(context, userManager, roleManager, env);
