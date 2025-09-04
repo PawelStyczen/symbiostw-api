@@ -320,6 +320,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\159c1eba-5de9-4d13-ae77-459f4c8f1343_premium_photo-1664110691122-6f33bcbeb574.jpeg))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1d7d6381-6a25-4ea1-be9b-06e8cda3890e_Zrzut ekranu 2025-09-04 o 09.13.29 AM [1].png))">
+      <SourceType>Package</SourceType>
+      <SourceId>DanceApi</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/DanceApi</BasePath>
+      <RelativePath>uploads/1d7d6381-6a25-4ea1-be9b-06e8cda3890e_Zrzut ekranu 2025-09-04 o 09.13.29 AM [1].png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1d7d6381-6a25-4ea1-be9b-06e8cda3890e_Zrzut ekranu 2025-09-04 o 09.13.29 AM [1].png))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1e4f6463-87fa-4d65-afbb-898fdeb76200_DSC_0775-1024x683+(1)-3665582551.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>DanceApi</SourceId>
@@ -1248,6 +1264,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\ae592fc9-575f-483f-8a0a-732df9c28458_uzytkowy.png))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b57ce521-bcd9-43ca-a561-e53947010330_Zrzut ekranu 2025-09-04 o 09.13.24 AM [1].png))">
+      <SourceType>Package</SourceType>
+      <SourceId>DanceApi</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/DanceApi</BasePath>
+      <RelativePath>uploads/b57ce521-bcd9-43ca-a561-e53947010330_Zrzut ekranu 2025-09-04 o 09.13.24 AM [1].png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b57ce521-bcd9-43ca-a561-e53947010330_Zrzut ekranu 2025-09-04 o 09.13.24 AM [1].png))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b66b4670-224a-4fd5-8e7e-340da59957bb_Pierwszy-taniec-2-107954331.jpeg))">
       <SourceType>Package</SourceType>
       <SourceId>DanceApi</SourceId>
@@ -1551,22 +1583,6 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e47c7a3f-14a4-4a1b-a56d-eee8b0617d24_stalowa-wola-poland-march-houses-city-259417596-1362983361.jpg))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e756ec82-c3cb-435a-8398-d778a0609092_User-Account-Person-PNG-File-1026727248.png))">
-      <SourceType>Package</SourceType>
-      <SourceId>DanceApi</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/DanceApi</BasePath>
-      <RelativePath>uploads/e756ec82-c3cb-435a-8398-d778a0609092_User-Account-Person-PNG-File-1026727248.png</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e756ec82-c3cb-435a-8398-d778a0609092_User-Account-Person-PNG-File-1026727248.png))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e8320ad7-9513-4352-b571-5905c02954c5_stalowa-wola-poland-march-houses-city-259417596-1362983361.jpg))">
       <SourceType>Package</SourceType>

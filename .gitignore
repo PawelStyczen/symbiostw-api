@@ -18,3 +18,6 @@ Thumbs.db
 ## Others
 .env
 *.db
+*.png
+/DanceApi/obj
+/DanceApi/obj

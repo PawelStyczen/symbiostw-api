@@ -8,7 +8,7 @@ public class TypeOfMeeting : VisibleHighlightBaseEntity
     [Required]
     public string Name { get; set; }
     
-    [MaxLength(2000)]
+    [MaxLength(4000)]
     public string Description { get; set; }
     
     [MaxLength(200)] 
