@@ -2,6 +2,7 @@ using DanceApi.Data;
 using DanceApi.Model;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,17 +13,20 @@ public class DatabaseSeeder
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IWebHostEnvironment _env;
+    private readonly IConfiguration _config;
 
     public DatabaseSeeder(
         AppDbContext context,
         UserManager<User> userManager,
         RoleManager<IdentityRole> roleManager,
-        IWebHostEnvironment env)
+        IWebHostEnvironment env,
+        IConfiguration config)
     {
         _context = context;
         _userManager = userManager;
         _roleManager = roleManager;
         _env = env;
+        _config = config;
     }
 
     public async Task SeedAsync()
@@ -30,18 +34,10 @@ public class DatabaseSeeder
         // Always seed roles
         await SeedRolesAsync();
 
-        // Only seed users in non-production
-        if (!_env.IsProduction())
-        {
-            Console.WriteLine("Running development seeding...");
-            var instructorId = await SeedUsersAsync();
-            await _context.SaveChangesAsync();
-            Console.WriteLine("Development seeding completed.");
-        }
-        else
-        {
-            Console.WriteLine("Production environment detected. Skipping user seeding.");
-        }
+        Console.WriteLine("Running database seeding...");
+        await SeedAdminAsync();
+        await _context.SaveChangesAsync();
+        Console.WriteLine("Seeding completed.");
     }
 
     private async Task SeedRolesAsync()
@@ -56,57 +52,42 @@ public class DatabaseSeeder
         }
     }
 
-    private async Task<string> SeedUsersAsync()
+    private async Task SeedAdminAsync()
     {
-        string instructorId = null;
+        // Read from config first, fallback to env vars (especially in production)
+        var adminEmail = _config["Admin:Email"] ?? Environment.GetEnvironmentVariable("ADMIN_EMAIL");
+        var adminPassword = _config["Admin:Password"] ?? Environment.GetEnvironmentVariable("ADMIN_PASSWORD");
 
-        // Seed regular user
-        if (await _userManager.FindByEmailAsync("user@example.com") == null)
+        if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
         {
-            var user = new User
-            {
-                UserName = "user@example.com",
-                Email = "user@example.com",
-                Name = "Test",
-                Surname = "User"
-            };
-            await _userManager.CreateAsync(user, "Password123!");
-            await _userManager.AddToRoleAsync(user, "User");
+            Console.WriteLine("Admin email or password not configured. Skipping admin creation.");
+            return;
         }
 
-        // Seed instructor
-        var instructor = await _userManager.FindByEmailAsync("instructor@example.com");
-        if (instructor == null)
+        var adminUser = await _userManager.FindByEmailAsync(adminEmail);
+        if (adminUser == null)
         {
-            instructor = new User
+            adminUser = new User
             {
-                UserName = "instructor@example.com",
-                Email = "instructor@example.com",
-                Name = "Instructor",
-                Surname = "Example"
-            };
-            await _userManager.CreateAsync(instructor, "Password123!");
-            await _userManager.AddToRoleAsync(instructor, "Instructor");
-        }
-
-        instructorId = instructor.Id;
-
-        // Seed admin
-        if (await _userManager.FindByEmailAsync("admin@example.com") == null)
-        {
-            var admin = new User
-            {
-                UserName = "admin@symbiostw.pl",
-                Email = "admin@symbiostw.pl",
+                UserName = adminEmail,
+                Email = adminEmail,
                 Name = "Admin",
-                Surname = "Master"
+                Surname = "Master",
+                EmailConfirmed = true
             };
-            await _userManager.CreateAsync(admin, "AdminPassword123!");
-            await _userManager.AddToRoleAsync(admin, "Admin");
-        }
 
-        return instructorId;
+            var result = await _userManager.CreateAsync(adminUser, adminPassword);
+            if (!result.Succeeded)
+            {
+                throw new Exception("Admin creation failed: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+
+            await _userManager.AddToRoleAsync(adminUser, "Admin");
+            Console.WriteLine("✅ Admin user created.");
+        }
+        else
+        {
+            Console.WriteLine("ℹ️ Admin user already exists.");
+        }
     }
-    
-    
 }

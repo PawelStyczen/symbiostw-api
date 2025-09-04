@@ -141,16 +141,10 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine("🔗 Connected to DB: " + context.Database.GetDbConnection().ConnectionString);
         await context.Database.MigrateAsync();
     
-        if (!env.IsProduction())
-        {
-            var seeder = new DatabaseSeeder(context, userManager, roleManager, env);
-            await seeder.SeedAsync();
-        }
-        else
-        {
-            var logger = services.GetRequiredService<ILogger<Program>>();
-            logger.LogInformation("Production environment detected, skipping development seeding.");
-        }
+        // Always run seed to ensure roles + admin
+        var configuration = services.GetRequiredService<IConfiguration>();
+        var seeder = new DatabaseSeeder(context, userManager, roleManager, env, configuration);
+        await seeder.SeedAsync();
     }
     catch (Exception ex)
     {
