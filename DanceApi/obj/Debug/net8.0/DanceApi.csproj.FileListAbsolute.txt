@@ -162,6 +162,7 @@
 /Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/DanceApi.csproj.CoreCompileInputs.cache
 /Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/DanceApi.MvcApplicationPartsAssemblyInfo.cs
 /Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/DanceApi.MvcApplicationPartsAssemblyInfo.cache
+/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/DanceApi.sourcelink.json
 /Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/staticwebassets.build.json
 /Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/staticwebassets.development.json
 /Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/staticwebassets/msbuild.DanceApi.Microsoft.AspNetCore.StaticWebAssets.props
@@ -176,4 +177,3 @@
 /Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/DanceApi.pdb
 /Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/DanceApi.genruntimeconfig.cache
 /Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/ref/DanceApi.dll
-/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/obj/Debug/net8.0/DanceApi.sourcelink.json

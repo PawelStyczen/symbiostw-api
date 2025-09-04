@@ -5087,6 +5087,8 @@
       "AutoMapper >= 13.0.1",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 8.0.11",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 8.0.10",
+      "Microsoft.CodeAnalysis.Analyzers >= 3.3.4",
+      "Microsoft.Data.SqlClient >= 5.1.6",
       "Microsoft.EntityFrameworkCore >= 9.0.0-rc.2.24474.1",
       "Microsoft.EntityFrameworkCore.Design >= 9.0.0-rc.2.24474.1",
       "Microsoft.EntityFrameworkCore.SqlServer >= 9.0.0-rc.2.24474.1",
@@ -5147,6 +5149,15 @@
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
             "target": "Package",
             "version": "[8.0.10, )"
+          },
+          "Microsoft.CodeAnalysis.Analyzers": {
+            "suppressParent": "All",
+            "target": "Package",
+            "version": "[3.3.4, )"
+          },
+          "Microsoft.Data.SqlClient": {
+            "target": "Package",
+            "version": "[5.1.6, )"
           },
           "Microsoft.EntityFrameworkCore": {
             "target": "Package",
