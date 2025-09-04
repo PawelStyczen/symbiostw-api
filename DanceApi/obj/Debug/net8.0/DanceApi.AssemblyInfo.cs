@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DanceApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8402af15c4efaefa05fc221442978e6a985de6ab")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0bd89e59dffa514235ef1ae4d18b7f21ca7d81c7")]
 [assembly: System.Reflection.AssemblyProductAttribute("DanceApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DanceApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
