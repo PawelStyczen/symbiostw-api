@@ -12,6 +12,11 @@ namespace DanceApi.Dto
         public int Duration { get; set; }
         public int LocationId { get; set; }
         public string LocationName { get; set; }
+        public string LocationCity { get; set; }
+        public string LocationStreet { get; set; }
+        public string LocationDescription { get; set; }
+
+        
         public string InstructorId { get; set; }
         public string InstructorName { get; set; }
         public int TypeOfMeetingId { get; set; }
