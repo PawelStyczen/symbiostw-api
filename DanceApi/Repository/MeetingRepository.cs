@@ -142,5 +142,38 @@ namespace DanceApi.Repository
                 .Include(m => m.TypeOfMeeting)
                 .ToListAsync();
         }
+        
+        public async Task<bool> SoftDeleteEventAsync(int meetingId, string userId)
+        {
+            await using var tx = await _context.Database.BeginTransactionAsync();
+
+            var meeting = await _context.Meetings
+                .Include(m => m.TypeOfMeeting)
+                .FirstOrDefaultAsync(m => m.Id == meetingId && !m.IsDeleted);
+
+            if (meeting == null || meeting.TypeOfMeeting == null)
+                return false;
+
+            if (!meeting.TypeOfMeeting.IsEvent)
+                return false;
+
+            // 1) soft delete meeting
+            meeting.IsDeleted = true;
+            meeting.DeletedById = userId;
+            meeting.DeletedDate = DateTime.UtcNow;
+
+            // 2) soft delete type
+            var type = meeting.TypeOfMeeting;
+            if (!type.IsDeleted)
+            {
+                type.IsDeleted = true;
+                type.DeletedById = userId;
+                type.DeletedDate = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+            await tx.CommitAsync();
+            return true;
+        }
     }
 }

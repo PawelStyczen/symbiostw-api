@@ -19,7 +19,8 @@ namespace DanceApi.Interface
         Task<bool> RemoveParticipantFromMeetingAsync(int meetingId, string userId);
         Task<IEnumerable<Meeting>> GetMeetingsByUserIdAsync(string userId); 
         
-        Task<IEnumerable<Meeting>> GetUpcomingMeetingsByUserIdAsync(string userId); 
-        
+        Task<IEnumerable<Meeting>> GetUpcomingMeetingsByUserIdAsync(string userId);
+
+        Task<bool> SoftDeleteEventAsync(int meetingId, string userId);
     }
 }

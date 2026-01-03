@@ -32,17 +32,32 @@ public class MappingProfiles : Profile
         // Meeting (derives from BaseEntity)
         CreateMap<Meeting, MeetingDto>()
             .IncludeBase<BaseEntity, BaseReadDto>()
-            .ForMember(d => d.LocationName,     o => o.MapFrom(s => s.Location.Name))
-            .ForMember(d => d.LocationCity,      o => o.MapFrom(s => s.Location.City))
-            .ForMember(d => d.LocationStreet,    o => o.MapFrom(s => s.Location.Street))
+            .ForMember(d => d.LocationName, o => o.MapFrom(s => s.Location.Name))
+            .ForMember(d => d.LocationCity, o => o.MapFrom(s => s.Location.City))
+            .ForMember(d => d.LocationStreet, o => o.MapFrom(s => s.Location.Street))
             .ForMember(d => d.LocationDescription, o => o.MapFrom(s => s.Location.Description))
-            .ForMember(d => d.InstructorName,   o => o.MapFrom(s => s.Instructor.Name))
-            .ForMember(d => d.TypeOfMeetingName,o => o.MapFrom(s => s.TypeOfMeeting.Name))
-            .ForMember(d => d.IsIndividual,     o => o.MapFrom(s => s.TypeOfMeeting.IsIndividual))
-            .ForMember(d => d.IsSolo,           o => o.MapFrom(s => s.TypeOfMeeting.IsSolo))
-            .ForMember(d => d.ImageUrl,         o => o.MapFrom(s => s.TypeOfMeeting.ImageUrl))
-            .ForMember(d => d.Level,             o => o.MapFrom(s => s.Level));
+            .ForMember(d => d.InstructorName, o => o.MapFrom(s => s.Instructor.Name))
+            .ForMember(d => d.TypeOfMeetingName, o => o.MapFrom(s => s.TypeOfMeeting.Name))
+            .ForMember(d => d.IsIndividual, o => o.MapFrom(s => s.TypeOfMeeting.IsIndividual))
+            .ForMember(d => d.IsSolo, o => o.MapFrom(s => s.TypeOfMeeting.IsSolo))
+            .ForMember(d => d.ImageUrl, o => o.MapFrom(s => s.TypeOfMeeting.ImageUrl))
+            .ForMember(d => d.IsEvent, o => o.MapFrom(s => s.TypeOfMeeting.IsEvent))
+            .ForMember(d => d.Level, o => o.MapFrom(s => s.Level))
+            .ForMember(d => d.Description, o => o.MapFrom(s => s.TypeOfMeeting.Description))
+            .ForMember(d => d.ShortDescription, o => o.MapFrom(s => s.TypeOfMeeting.ShortDescription));
+        
+        
 
+        CreateMap<Meeting, PublicEventDto>()
+            .ForMember(d => d.Name, o => o.MapFrom(s => s.TypeOfMeeting.Name))
+            .ForMember(d => d.Description, o => o.MapFrom(s => s.TypeOfMeeting.Description))
+            .ForMember(d => d.ShortDescription, o => o.MapFrom(s => s.TypeOfMeeting.ShortDescription))
+            .ForMember(d => d.ImageUrl, o => o.MapFrom(s => s.TypeOfMeeting.ImageUrl))
+            .ForMember(d => d.Price, o => o.MapFrom(s => s.Price))
+            .ForMember(d => d.LocationName, o => o.MapFrom(s => s.Location.Name))
+            .ForMember(d => d.InstructorName, o => o.MapFrom(s => $"{s.Instructor.Name} {s.Instructor.Surname}"))
+            .ForMember(d => d.IsEvent, o => o.MapFrom(_ => true));
+ 
         CreateMap<CreateMeetingDto, Meeting>();
 
         // ❗️User does NOT derive from BaseEntity — DO NOT IncludeBase here

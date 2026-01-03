@@ -21,7 +21,7 @@ public class TypeOfMeeting : VisibleHighlightBaseEntity
     
     public bool IsSolo { get; set; } = false;
     
-    
+    public bool IsEvent { get; set; } = false;
    
     
     public ICollection<Review> Reviews { get; set; } = new List<Review>();

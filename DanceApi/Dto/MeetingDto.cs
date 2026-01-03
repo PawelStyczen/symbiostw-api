@@ -31,7 +31,12 @@ namespace DanceApi.Dto
         public bool IsHighlighted { get; set; }
         public bool IsVisible { get; set; }
         
+        public bool IsEvent { get; set; }
+        
         public SkillLevel? Level { get; set; }
+        
+        public string? Description { get; set; }
+        public string? ShortDescription { get; set; }
     }
 
 

@@ -23,7 +23,7 @@ public class TypeOfMeetingRepository : ITypeOfMeetingRepository
     public async Task<IEnumerable<TypeOfMeeting>> GetAllTypeOfMeetingsAsync()
     {
         return await _context.TypeOfMeetings
-            .Where(t => !t.IsDeleted)
+            .Where(t => !t.IsDeleted && !t.IsEvent)
             .Include(t => t.CreatedBy) 
             .Include(t => t.UpdatedBy) 
             .ToListAsync();
@@ -32,7 +32,7 @@ public class TypeOfMeetingRepository : ITypeOfMeetingRepository
     public async Task<IEnumerable<TypeOfMeeting>> GetAllTypeOfMeetingsVisibleAsync()
     {
         return await _context.TypeOfMeetings
-            .Where(t => !t.IsDeleted && t.IsVisible) 
+            .Where(t => !t.IsDeleted && t.IsVisible && !t.IsEvent) 
             .Include(t => t.CreatedBy) 
             .Include(t => t.UpdatedBy) 
             .ToListAsync();

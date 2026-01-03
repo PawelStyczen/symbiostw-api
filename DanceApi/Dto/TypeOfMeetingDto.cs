@@ -15,6 +15,8 @@ namespace DanceApi.Dto
         
         public bool IsSolo { get; set; }
         
+        public bool IsEvent { get; set; }
+        
     }
 
     public class TypeOfMeetingCreateDto
@@ -45,5 +47,7 @@ namespace DanceApi.Dto
         
         public bool IsHighlighted { get; set; }
         public bool IsVisible { get; set; }
+        
+        public bool IsEvent { get; set; }
     }
 }

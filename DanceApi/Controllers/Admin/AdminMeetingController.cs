@@ -71,6 +71,8 @@ public class AdminMeetingController : ControllerBase
         return Ok(meetingDtos);
     }
 
+    
+    
     [HttpGet("{id}")]
     public async Task<IActionResult> GetMeetingById(int id)
     {
