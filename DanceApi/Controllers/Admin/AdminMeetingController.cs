@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using DanceApi.Dto.DanceApi.Dto;
 using Swashbuckle.AspNetCore.Annotations;
 
 [Route("api/Admin/[controller]")]
@@ -315,4 +316,44 @@ public class AdminMeetingController : ControllerBase
         return NoContent();
     }
  
+    [Authorize(Roles = "Admin")]
+    [HttpPost("copy-month")]
+    public async Task<IActionResult> CopyMonth([FromBody] CopyMonthDto dto)
+    {
+        var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var result = await _meetingRepository.CopyMeetingsMonthAsync(
+            dto.SourceYear,
+            dto.SourceMonth,
+            dto.TargetYear,
+            dto.TargetMonth,
+            userId
+        );
+
+        return Ok(new { copied = result });
+    }
+    
+ 
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("copy-week")]
+    public async Task<IActionResult> CopyWeek([FromBody] CopyWeekDto dto)
+    {
+        var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        if (dto.SourceYear == dto.TargetYear && dto.SourceWeek == dto.TargetWeek)
+            return BadRequest("Source and target week cannot be the same.");
+
+        var copied = await _meetingRepository.CopyWeekAsync(
+            dto.SourceYear, dto.SourceWeek, dto.TargetYear, dto.TargetWeek, userId
+        );
+
+        return Ok(new { copied });
+    }
+    
+    
 }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DanceApi.Helper;
 
 namespace DanceApi.Repository
 {
@@ -17,6 +18,103 @@ namespace DanceApi.Repository
             _context = context;
         }
 
+        public async Task<int> CopyMeetingsMonthAsync(
+            int sourceYear,
+            int sourceMonth,
+            int targetYear,
+            int targetMonth,
+            string userId)
+        {
+            // Jeśli w DB trzymasz UTC — użyj DateTimeKind.Utc konsekwentnie:
+            var sourceStart = new DateTime(sourceYear, sourceMonth, 1, 0, 0, 0, DateTimeKind.Utc);
+            var sourceEnd = sourceStart.AddMonths(1);
+
+            var targetStart = new DateTime(targetYear, targetMonth, 1, 0, 0, 0, DateTimeKind.Utc);
+            var targetEnd = targetStart.AddMonths(1);
+
+            // "Grid start" = Monday tygodnia, w którym jest 1 dzień miesiąca
+            var sourceGridStart = DateHelpers.GetMondayOfWeek(sourceStart);
+            var targetGridStart = DateHelpers.GetMondayOfWeek(targetStart);
+
+            var meetings = await _context.Meetings
+                .Where(m => !m.IsDeleted && m.Date >= sourceStart && m.Date < sourceEnd)
+                .ToListAsync();
+
+            int copied = 0;
+
+            foreach (var m in meetings)
+            {
+                // Offset w minutach od gridStart, żeby zachować też godziny
+                var offset = m.Date - sourceGridStart;
+                var targetDate = targetGridStart.Add(offset);
+
+                // ✅ WAŻNE: kopiuj tylko te, które lądują w target miesiącu
+                if (targetDate < targetStart || targetDate >= targetEnd)
+                    continue;
+
+                var clone = new Meeting
+                {
+                    Date = targetDate,
+                    Duration = m.Duration,
+                    LocationId = m.LocationId,
+                    InstructorId = m.InstructorId,
+                    TypeOfMeetingId = m.TypeOfMeetingId,
+                    Price = m.Price,
+                    Level = m.Level,
+                    IsVisible = m.IsVisible,
+                    IsHighlighted = false,
+                    CreatedById = userId,
+                    CreatedDate = DateTime.UtcNow
+                };
+
+                _context.Meetings.Add(clone);
+                copied++;
+            }
+
+            await _context.SaveChangesAsync();
+            return copied;
+        }
+        
+       
+
+        public async Task<int> CopyWeekAsync(int sourceYear, int sourceWeek, int targetYear, int targetWeek, string userId)
+        {
+            var sourceStart = DateHelpers.GetMondayOfIsoWeek(sourceYear, sourceWeek);
+            var sourceEnd = sourceStart.AddDays(7);
+
+            var targetStart = DateHelpers.GetMondayOfIsoWeek(targetYear, targetWeek);
+
+            // delta tygodni (najczęściej +7 dni, ale działa też na dowolny tydzień)
+            var delta = targetStart - sourceStart;
+
+            var sourceMeetings = await _context.Meetings
+                .Where(m => !m.IsDeleted && m.Date >= sourceStart && m.Date < sourceEnd)
+                .ToListAsync();
+
+            if (!sourceMeetings.Any())
+                return 0;
+
+            var copies = sourceMeetings.Select(m => new Meeting
+            {
+                Date = m.Date.Add(delta),              // ✅ zachowuje godzinę 1:1
+                Duration = m.Duration,
+                LocationId = m.LocationId,
+                InstructorId = m.InstructorId,
+                TypeOfMeetingId = m.TypeOfMeetingId,
+                Price = m.Price,
+                Level = m.Level,
+                IsHighlighted = false,
+                IsVisible = m.IsVisible,
+                CreatedById = userId,
+                CreatedDate = DateTime.UtcNow
+            }).ToList();
+
+            _context.Meetings.AddRange(copies);
+            await _context.SaveChangesAsync();
+
+            return copies.Count;
+        }
+        
         public async Task<IEnumerable<Meeting>> GetAllMeetingsAsync()
         {
             return await _context.Meetings
@@ -143,6 +241,8 @@ namespace DanceApi.Repository
                 .ToListAsync();
         }
         
+        
+        
         public async Task<bool> SoftDeleteEventAsync(int meetingId, string userId)
         {
             await using var tx = await _context.Database.BeginTransactionAsync();
@@ -175,5 +275,8 @@ namespace DanceApi.Repository
             await tx.CommitAsync();
             return true;
         }
+        
+        
     }
+    
 }

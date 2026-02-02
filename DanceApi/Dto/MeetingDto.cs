@@ -78,5 +78,23 @@ namespace DanceApi.Dto
         public string Email { get; set; }
     }
     
+    public class CopyMonthDto
+    {
+        public int SourceYear { get; set; }
+        public int SourceMonth { get; set; }   // 1–12
+        public int TargetYear { get; set; }
+        public int TargetMonth { get; set; }   // 1–12
+    }
     
+    namespace DanceApi.Dto
+    {
+        public class CopyWeekDto
+        {
+            public int SourceYear { get; set; }
+            public int SourceWeek { get; set; }   // ISO week 1..53
+
+            public int TargetYear { get; set; }
+            public int TargetWeek { get; set; }   // ISO week 1..53
+        }
+    }
 }

@@ -101,6 +101,10 @@
       "PackagePath": "staticwebassets/uploads/23428e3f-6b64-400c-b46b-d98e4cb4269f_Pierwszy-taniec-2-107954331.jpeg"
     },
     {
+      "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/2c2c7eec-84c3-4530-9683-26ab74251b07_bachata.png",
+      "PackagePath": "staticwebassets/uploads/2c2c7eec-84c3-4530-9683-26ab74251b07_bachata.png"
+    },
+    {
       "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/2e4c71de-17f3-4aa0-89c5-8653f166614e_IMG_0439.jpeg",
       "PackagePath": "staticwebassets/uploads/2e4c71de-17f3-4aa0-89c5-8653f166614e_IMG_0439.jpeg"
     },
@@ -115,6 +119,10 @@
     {
       "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/31f9ea3e-8ed1-451a-bfae-508b462f84c5_Pierwszy-taniec-2-107954331.jpeg",
       "PackagePath": "staticwebassets/uploads/31f9ea3e-8ed1-451a-bfae-508b462f84c5_Pierwszy-taniec-2-107954331.jpeg"
+    },
+    {
+      "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/395c4355-1163-4caa-941e-114f2396b26a_BMD-3398-2398548705.png",
+      "PackagePath": "staticwebassets/uploads/395c4355-1163-4caa-941e-114f2396b26a_BMD-3398-2398548705.png"
     },
     {
       "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/3b002f41-923f-45a1-bef5-a81462dd5c45_Pierwszy-taniec-2-107954331.jpeg",
@@ -289,12 +297,20 @@
       "PackagePath": "staticwebassets/uploads/a089b034-ffd2-4503-bd4b-5853f2dbfb49_Pierwszy-taniec-2-107954331.jpeg"
     },
     {
+      "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/a1202c6a-09fb-4072-9ed5-f15acb8f1dba_BMD-3398-2398548705.png",
+      "PackagePath": "staticwebassets/uploads/a1202c6a-09fb-4072-9ed5-f15acb8f1dba_BMD-3398-2398548705.png"
+    },
+    {
       "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/a35557e8-7e6c-4b1b-aa79-4f5b36a9c047_Pierwszy-taniec-2-107954331.jpeg",
       "PackagePath": "staticwebassets/uploads/a35557e8-7e6c-4b1b-aa79-4f5b36a9c047_Pierwszy-taniec-2-107954331.jpeg"
     },
     {
       "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/a3fd14f6-e79f-4574-bd69-1d78897339c9_stalowa-wola-poland-march-houses-city-259417596-1362983361.jpg",
       "PackagePath": "staticwebassets/uploads/a3fd14f6-e79f-4574-bd69-1d78897339c9_stalowa-wola-poland-march-houses-city-259417596-1362983361.jpg"
+    },
+    {
+      "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/a6cebbdf-babf-47f5-b523-d86734d164cd_afro.png",
+      "PackagePath": "staticwebassets/uploads/a6cebbdf-babf-47f5-b523-d86734d164cd_afro.png"
     },
     {
       "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/a7566cc1-aed0-417d-80ec-fed5a65e65a8_Untitled-design-38.png",
@@ -333,6 +349,10 @@
       "PackagePath": "staticwebassets/uploads/b83fa667-f823-49b7-82cd-8a3bc46ab330_IMG_0439.jpeg"
     },
     {
+      "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/b99d82c6-4c7e-44ea-a222-0300806e5d71_bachata.png",
+      "PackagePath": "staticwebassets/uploads/b99d82c6-4c7e-44ea-a222-0300806e5d71_bachata.png"
+    },
+    {
       "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/be66b50b-48c5-472f-93f7-ac572395ff58_Pierwszy-taniec-2-107954331.jpeg",
       "PackagePath": "staticwebassets/uploads/be66b50b-48c5-472f-93f7-ac572395ff58_Pierwszy-taniec-2-107954331.jpeg"
     },
@@ -355,6 +375,10 @@
     {
       "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/ca837f70-36aa-42c1-badd-a2a9a3bc0da9_Zrzut ekranu 2025-08-8 o 15.53.21.png",
       "PackagePath": "staticwebassets/uploads/ca837f70-36aa-42c1-badd-a2a9a3bc0da9_Zrzut ekranu 2025-08-8 o 15.53.21.png"
+    },
+    {
+      "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/cced10e7-ea57-439a-917b-be1e02178068_BMD-3398-2398548705.png",
+      "PackagePath": "staticwebassets/uploads/cced10e7-ea57-439a-917b-be1e02178068_BMD-3398-2398548705.png"
     },
     {
       "Id": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/cea51bf5-c504-49ae-a27e-8e7b07c0945a_Pierwszy-taniec-2-107954331.jpeg",
