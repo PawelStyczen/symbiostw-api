@@ -31,3 +31,4 @@ DanceApi/obj/Debug/net8.0/DanceApi.AssemblyInfo.cs
 *.pdb
 /DanceApi/obj/Debug/net8.0
 *.info
+*.dll
