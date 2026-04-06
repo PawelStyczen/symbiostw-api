@@ -5,13 +5,13 @@
 namespace DanceApi.Migrations
 {
     /// <inheritdoc />
-    public partial class isSoloadded : Migration
+    public partial class AddIsEventtoTypeOfMeeting : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
-                name: "IsSolo",
+                name: "IsEvent",
                 table: "TypeOfMeetings",
                 type: "bit",
                 nullable: false,
@@ -22,7 +22,7 @@ namespace DanceApi.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "IsSolo",
+                name: "IsEvent",
                 table: "TypeOfMeetings");
         }
     }

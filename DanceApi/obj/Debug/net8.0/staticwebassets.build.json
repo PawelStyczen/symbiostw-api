@@ -1,10 +1,14 @@
 {
   "Version": 1,
+<<<<<<< HEAD
 <<<<<<< Updated upstream
   "Hash": "AJX66TBPxa+ogLMJGyqkR4Yc6fBNbsQ82fPMEOQokRs=",
 =======
   "Hash": "UT4ZBT8g6u/684dWJIaS8fwQ0MBQoc4EnAyM2NE8+Xc=",
 >>>>>>> Stashed changes
+=======
+  "Hash": "c74b22SRqXZXBCkm+skMHz7CSkhucF53HDJ7Erh6PwQ=",
+>>>>>>> main
   "Source": "DanceApi",
   "BasePath": "_content/DanceApi",
   "Mode": "Default",
@@ -1674,6 +1678,25 @@
       "OriginalItemSpec": "wwwroot/uploads/c838ec9c-95bf-4f46-92db-ff4eb7c14393_dzieci.png"
     },
     {
+      "Identity": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/ca837f70-36aa-42c1-badd-a2a9a3bc0da9_Zrzut ekranu 2025-08-8 o 15.53.21.png",
+      "SourceId": "DanceApi",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/",
+      "BasePath": "_content/DanceApi",
+      "RelativePath": "uploads/ca837f70-36aa-42c1-badd-a2a9a3bc0da9_Zrzut ekranu 2025-08-8 o 15.53.21.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/uploads/ca837f70-36aa-42c1-badd-a2a9a3bc0da9_Zrzut ekranu 2025-08-8 o 15.53.21.png"
+    },
+    {
       "Identity": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/cea51bf5-c504-49ae-a27e-8e7b07c0945a_Pierwszy-taniec-2-107954331.jpeg",
       "SourceId": "DanceApi",
       "SourceType": "Discovered",
@@ -1862,25 +1885,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/uploads/e47c7a3f-14a4-4a1b-a56d-eee8b0617d24_stalowa-wola-poland-march-houses-city-259417596-1362983361.jpg"
-    },
-    {
-      "Identity": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/e756ec82-c3cb-435a-8398-d778a0609092_User-Account-Person-PNG-File-1026727248.png",
-      "SourceId": "DanceApi",
-      "SourceType": "Discovered",
-      "ContentRoot": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/",
-      "BasePath": "_content/DanceApi",
-      "RelativePath": "uploads/e756ec82-c3cb-435a-8398-d778a0609092_User-Account-Person-PNG-File-1026727248.png",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/uploads/e756ec82-c3cb-435a-8398-d778a0609092_User-Account-Person-PNG-File-1026727248.png"
     },
     {
       "Identity": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/e8320ad7-9513-4352-b571-5905c02954c5_stalowa-wola-poland-march-houses-city-259417596-1362983361.jpg",

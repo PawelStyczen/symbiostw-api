@@ -12,6 +12,11 @@ namespace DanceApi.Dto
         public int Duration { get; set; }
         public int LocationId { get; set; }
         public string LocationName { get; set; }
+        public string LocationCity { get; set; }
+        public string LocationStreet { get; set; }
+        public string LocationDescription { get; set; }
+
+        
         public string InstructorId { get; set; }
         public string InstructorName { get; set; }
         public int TypeOfMeetingId { get; set; }
@@ -26,7 +31,12 @@ namespace DanceApi.Dto
         public bool IsHighlighted { get; set; }
         public bool IsVisible { get; set; }
         
+        public bool IsEvent { get; set; }
+        
         public SkillLevel? Level { get; set; }
+        
+        public string? Description { get; set; }
+        public string? ShortDescription { get; set; }
     }
 
 
@@ -68,5 +78,23 @@ namespace DanceApi.Dto
         public string Email { get; set; }
     }
     
+    public class CopyMonthDto
+    {
+        public int SourceYear { get; set; }
+        public int SourceMonth { get; set; }   // 1–12
+        public int TargetYear { get; set; }
+        public int TargetMonth { get; set; }   // 1–12
+    }
     
+    namespace DanceApi.Dto
+    {
+        public class CopyWeekDto
+        {
+            public int SourceYear { get; set; }
+            public int SourceWeek { get; set; }   // ISO week 1..53
+
+            public int TargetYear { get; set; }
+            public int TargetWeek { get; set; }   // ISO week 1..53
+        }
+    }
 }

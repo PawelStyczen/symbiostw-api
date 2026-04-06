@@ -1,6 +1,7 @@
 using DanceApi.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DanceApi.Dto;
 
 namespace DanceApi.Interface
 {
@@ -19,7 +20,18 @@ namespace DanceApi.Interface
         Task<bool> RemoveParticipantFromMeetingAsync(int meetingId, string userId);
         Task<IEnumerable<Meeting>> GetMeetingsByUserIdAsync(string userId); 
         
-        Task<IEnumerable<Meeting>> GetUpcomingMeetingsByUserIdAsync(string userId); 
+        Task<IEnumerable<Meeting>> GetUpcomingMeetingsByUserIdAsync(string userId);
+
+        Task<bool> SoftDeleteEventAsync(int meetingId, string userId);
         
+        Task<int> CopyMeetingsMonthAsync(
+            int sourceYear,
+            int sourceMonth,
+            int targetYear,
+            int targetMonth,
+            string userId
+        );
+        
+        Task<int> CopyWeekAsync(int sourceYear, int sourceWeek, int targetYear, int targetWeek, string userId);
     }
 }

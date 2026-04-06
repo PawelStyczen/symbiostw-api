@@ -1,0 +1,29 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.log
+
+## VSCode / Rider / JetBrains IDEs
+.vscode/
+.idea/
+
+## OS generated
+.DS_Store
+Thumbs.db
+
+## Others
+.env
+*.db
+*.png
+/DanceApi/obj
+/DanceApi/obj
+DanceApi/obj/Debug/net8.0/DanceApi.dll
+*.cache
+/DanceApi/obj
+DanceApi/obj/Debug/net8.0/DanceApi.AssemblyInfo.cs
+/DanceApi/obj
+/DanceApi/bin

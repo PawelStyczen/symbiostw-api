@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.Annotations;
 
 // <-- add this
 
@@ -46,7 +47,7 @@ namespace DanceApi.Controllers.Admin
         }
 
         // ===== Instructors =====
-
+        [SwaggerIgnore]
         [HttpPost("RegisterInstructor")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> RegisterInstructor(
@@ -245,7 +246,7 @@ namespace DanceApi.Controllers.Admin
             var dto = _mapper.Map<InstructorDto>(instructor);
             return Ok(dto);
         }
-
+        [SwaggerIgnore]
         [HttpPut("Instructors/{id}")]
 [Authorize(Roles = "Admin")] // or "Instructor,Admin" if instructors can edit themselves
 [Consumes("multipart/form-data")]

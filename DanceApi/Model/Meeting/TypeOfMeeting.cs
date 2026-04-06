@@ -8,7 +8,7 @@ public class TypeOfMeeting : VisibleHighlightBaseEntity
     [Required]
     public string Name { get; set; }
     
-    [MaxLength(2000)]
+    [MaxLength(4000)]
     public string Description { get; set; }
     
     [MaxLength(200)] 
@@ -21,7 +21,7 @@ public class TypeOfMeeting : VisibleHighlightBaseEntity
     
     public bool IsSolo { get; set; } = false;
     
-    
+    public bool IsEvent { get; set; } = false;
    
     
     public ICollection<Review> Reviews { get; set; } = new List<Review>();

@@ -1,71 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c6953717-6d39-4925-a8b3-c864b7149235" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/DanceApi/bin/Debug/net8.0/DanceApi.dll" beforeDir="false" afterPath="$PROJECT_DIR$/DanceApi/bin/Debug/net8.0/DanceApi.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DanceApi/bin/Debug/net8.0/DanceApi.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/DanceApi/bin/Debug/net8.0/DanceApi.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DanceApi/bin/Debug/net8.0/DanceApi.staticwebassets.runtime.json" beforeDir="false" afterPath="$PROJECT_DIR$/DanceApi/bin/Debug/net8.0/DanceApi.staticwebassets.runtime.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/DanceApi.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/DanceApi.AssemblyInfo.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/DanceApi.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/DanceApi.AssemblyInfoInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/DanceApi.dll" beforeDir="false" afterPath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/DanceApi.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/DanceApi.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/DanceApi.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/ref/DanceApi.dll" beforeDir="false" afterPath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/ref/DanceApi.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/refint/DanceApi.dll" beforeDir="false" afterPath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/refint/DanceApi.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/staticwebassets.build.json" beforeDir="false" afterPath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/staticwebassets.build.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/staticwebassets.development.json" beforeDir="false" afterPath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/staticwebassets.development.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/staticwebassets.pack.json" beforeDir="false" afterPath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/staticwebassets.pack.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/staticwebassets/msbuild.DanceApi.Microsoft.AspNetCore.StaticWebAssets.props" beforeDir="false" afterPath="$PROJECT_DIR$/DanceApi/obj/Debug/net8.0/staticwebassets/msbuild.DanceApi.Microsoft.AspNetCore.StaticWebAssets.props" afterDir="false" />
-    </list>
+    <list default="true" id="c6953717-6d39-4925-a8b3-c864b7149235" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-<<<<<<< Updated upstream
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 1
-}]]></component>
-=======
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;PawelStyczen&quot;
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "PawelStyczen"
   }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/PawelStyczen/symbiostw-api.git&quot;,
-    &quot;accountId&quot;: &quot;52d1f2f8-7100-4407-8568-4ffe941f1609&quot;
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/PawelStyczen/symbiostw-api.git",
+    "accountId": "52d1f2f8-7100-4407-8568-4ffe941f1609"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
 }</component>
->>>>>>> Stashed changes
   <component name="ProjectId" id="329nphq1uymLs3aulR8mvLSGc7z" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-<<<<<<< Updated upstream
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
-=======
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
->>>>>>> Stashed changes
   }
-}</component>
+}]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -75,11 +47,7 @@
       <option name="presentableId" value="Default" />
       <updated>1756841839222</updated>
       <workItem from="1756841840297" duration="72000" />
-<<<<<<< Updated upstream
-=======
       <workItem from="1759516729010" duration="32000" />
-      <workItem from="1775476354459" duration="23000" />
->>>>>>> Stashed changes
     </task>
     <servers />
   </component>
