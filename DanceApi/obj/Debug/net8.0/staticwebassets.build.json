@@ -1,6 +1,10 @@
 {
   "Version": 1,
+<<<<<<< Updated upstream
   "Hash": "AJX66TBPxa+ogLMJGyqkR4Yc6fBNbsQ82fPMEOQokRs=",
+=======
+  "Hash": "UT4ZBT8g6u/684dWJIaS8fwQ0MBQoc4EnAyM2NE8+Xc=",
+>>>>>>> Stashed changes
   "Source": "DanceApi",
   "BasePath": "_content/DanceApi",
   "Mode": "Default",
@@ -1079,6 +1083,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/uploads/82956467-1140-4047-8dbc-03c79acd937d_User-Account-Person-PNG-File-1026727248.png"
+    },
+    {
+      "Identity": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/8456a8a0-2dad-4479-aa1f-0d6e3ef318b7_p3-4.jpg",
+      "SourceId": "DanceApi",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/",
+      "BasePath": "_content/DanceApi",
+      "RelativePath": "uploads/8456a8a0-2dad-4479-aa1f-0d6e3ef318b7_p3-4.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/uploads/8456a8a0-2dad-4479-aa1f-0d6e3ef318b7_p3-4.jpg"
     },
     {
       "Identity": "/Users/pawelstyczen/RiderProjects/DanceApi/DanceApi/wwwroot/uploads/86dbd9b9-f16d-495f-a8dd-ee0ccdf2a62d_Pierwszy-taniec-2-107954331.jpeg",
