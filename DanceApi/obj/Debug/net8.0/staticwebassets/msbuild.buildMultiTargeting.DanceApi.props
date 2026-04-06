@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/DanceApi.props" />
-</Project>
