@@ -21,8 +21,11 @@ public class Meeting : VisibleHighlightBaseEntity
         [Required]
         public int LocationId { get; set; } 
         public Location Location { get; set; } 
-        public string InstructorId { get; set; }
-        public User Instructor { get; set; }
+        public string? InstructorId { get; set; }
+        public User? Instructor { get; set; }
+        
+        public int? GuestInstructorId { get; set; }
+        public GuestUser? GuestInstructor { get; set; }
 
         [Required]
         public int TypeOfMeetingId { get; set; }
@@ -34,5 +37,9 @@ public class Meeting : VisibleHighlightBaseEntity
  
 
         public ICollection<MeetingParticipant> MeetingParticipants { get; set; }
+                = new List<MeetingParticipant>();
+
+        public ICollection<MeetingGuestParticipant> MeetingGuestParticipants { get; set; }
+                = new List<MeetingGuestParticipant>();
     
 }

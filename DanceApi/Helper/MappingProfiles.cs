@@ -36,7 +36,12 @@ public class MappingProfiles : Profile
             .ForMember(d => d.LocationCity, o => o.MapFrom(s => s.Location.City))
             .ForMember(d => d.LocationStreet, o => o.MapFrom(s => s.Location.Street))
             .ForMember(d => d.LocationDescription, o => o.MapFrom(s => s.Location.Description))
-            .ForMember(d => d.InstructorName, o => o.MapFrom(s => s.Instructor.Name))
+            .ForMember(d => d.InstructorName, o => o.MapFrom(s =>
+                s.Instructor != null
+                    ? $"{s.Instructor.Name} {s.Instructor.Surname}"
+                    : s.GuestInstructor != null
+                        ? $"{s.GuestInstructor.Name} {s.GuestInstructor.Surname}"
+                        : string.Empty))
             .ForMember(d => d.TypeOfMeetingName, o => o.MapFrom(s => s.TypeOfMeeting.Name))
             .ForMember(d => d.IsIndividual, o => o.MapFrom(s => s.TypeOfMeeting.IsIndividual))
             .ForMember(d => d.IsSolo, o => o.MapFrom(s => s.TypeOfMeeting.IsSolo))
@@ -55,7 +60,12 @@ public class MappingProfiles : Profile
             .ForMember(d => d.ImageUrl, o => o.MapFrom(s => s.TypeOfMeeting.ImageUrl))
             .ForMember(d => d.Price, o => o.MapFrom(s => s.Price))
             .ForMember(d => d.LocationName, o => o.MapFrom(s => s.Location.Name))
-            .ForMember(d => d.InstructorName, o => o.MapFrom(s => $"{s.Instructor.Name} {s.Instructor.Surname}"))
+            .ForMember(d => d.InstructorName, o => o.MapFrom(s =>
+                s.Instructor != null
+                    ? $"{s.Instructor.Name} {s.Instructor.Surname}"
+                    : s.GuestInstructor != null
+                        ? $"{s.GuestInstructor.Name} {s.GuestInstructor.Surname}"
+                        : string.Empty))
             .ForMember(d => d.IsEvent, o => o.MapFrom(_ => true));
  
         CreateMap<CreateMeetingDto, Meeting>();
@@ -99,6 +109,40 @@ public class MappingProfiles : Profile
             .ForMember(d => d.TikTokLink,
                 o => o.MapFrom(s => s.InstructorProfile != null ? s.InstructorProfile.TikTokLink : null));
 
+        CreateMap<GuestUser, GuestInstructorDto>()
+            .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+            .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
+            .ForMember(d => d.Surname, o => o.MapFrom(s => s.Surname))
+            .ForMember(d => d.Email, o => o.MapFrom(s => s.Email))
+            .ForMember(d => d.IsDeleted, o => o.MapFrom(s => s.IsDeleted))
+            .ForMember(d => d.Bio, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.Bio : null))
+            .ForMember(d => d.ExperienceYears, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.ExperienceYears : null))
+            .ForMember(d => d.Specialization, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.Specialization : null))
+            .ForMember(d => d.FacebookLink, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.FacebookLink : null))
+            .ForMember(d => d.InstagramLink, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.InstagramLink : null))
+            .ForMember(d => d.TikTokLink, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.TikTokLink : null))
+            .ForMember(d => d.ImageUrl, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.ImageUrl : null))
+            .ForMember(d => d.CreatedById, o => o.Ignore())
+            .ForMember(d => d.CreatedByName, o => o.Ignore())
+            .ForMember(d => d.CreatedDate, o => o.Ignore())
+            .ForMember(d => d.UpdatedById, o => o.Ignore())
+            .ForMember(d => d.UpdatedByName, o => o.Ignore())
+            .ForMember(d => d.UpdatedDate, o => o.Ignore());
+        
+        CreateMap<GuestUser, PublicGuestInstructorDto>()
+            .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+            .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
+            .ForMember(d => d.Surname, o => o.MapFrom(s => s.Surname))
+            .ForMember(d => d.Bio, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.Bio : string.Empty))
+            .ForMember(d => d.Specialization, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.Specialization : string.Empty))
+            .ForMember(d => d.ExperienceYears, o => o.MapFrom(s => s.GuestInstructorProfile != null && s.GuestInstructorProfile.ExperienceYears.HasValue
+                ? s.GuestInstructorProfile.ExperienceYears.Value
+                : 0))
+            .ForMember(d => d.ImageUrl, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.ImageUrl : string.Empty))
+            .ForMember(d => d.FacebookLink, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.FacebookLink : null))
+            .ForMember(d => d.InstagramLink, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.InstagramLink : null))
+            .ForMember(d => d.TikTokLink, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.TikTokLink : null));
+        
         // NewsArticle (if derives from BaseEntity, you can IncludeBase; otherwise don’t)
         CreateMap<NewsArticle, NewsArticleReadDto>()
             .ForMember(d => d.CreatedById,   o => o.MapFrom(s => s.CreatedById))
