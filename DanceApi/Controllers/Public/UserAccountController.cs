@@ -7,8 +7,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using DanceApi.Dto;
+using DanceApi.Helper;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace DanceApi.Controllers
 {
@@ -17,6 +19,7 @@ namespace DanceApi.Controllers
     [Authorize(Roles = "User")]
     public class UserAccountController : ControllerBase
     {
+        private readonly IAuditLogService _auditLogService;
         private readonly IUserRepository _userRepository;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
@@ -24,11 +27,13 @@ namespace DanceApi.Controllers
         public UserAccountController(
             IUserRepository userRepository,
             SignInManager<User> signInManager,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IAuditLogService auditLogService)
         {
             _userRepository = userRepository;
             _signInManager = signInManager;
             _userManager = userManager;
+            _auditLogService = auditLogService;
         }
 
         // POST: api/User/Account/RegisterUser
@@ -45,14 +50,46 @@ namespace DanceApi.Controllers
                 Email = model.Email,
                 Name = model.Name,
                 Surname = model.Surname,
+                PhoneNumber = string.IsNullOrWhiteSpace(model.PhoneNumber) ? null : model.PhoneNumber.Trim()
             };
 
             var result = await _userRepository.CreateUserAsync(user, model.Password);
             if (result.Succeeded)
             {
+                _userRepository.AddUserProfile(new UserProfile
+                {
+                    UserId = user.Id,
+                    AllowNewsletter = model.AllowNewsletter,
+                    AllowSmsMarketing = model.AllowSmsMarketing,
+                    AboutMe = string.Empty
+                });
+                await _userRepository.SaveChangesAsync();
+
                 var roleAssignmentResult = await _userRepository.AddUserToRoleAsync(user, "User");
                 if (roleAssignmentResult)
+                {
+                    var changes = new AuditChangeSetBuilder()
+                        .AddCreated("name", user.Name)
+                        .AddCreated("surname", user.Surname)
+                        .AddCreated("email", user.Email)
+                        .AddCreated("phoneNumber", user.PhoneNumber)
+                        .AddCreated("allowNewsletter", model.AllowNewsletter)
+                        .AddCreated("allowSmsMarketing", model.AllowSmsMarketing)
+                        .Build();
+
+                    await _auditLogService.WriteAsync(new AuditWriteRequest
+                    {
+                        TargetType = AuditLogTargetType.User,
+                        TargetId = user.Id,
+                        ActionType = AuditLogActionType.Created,
+                        SourceType = AuditLogSourceType.PublicRequest,
+                        Actor = AuditActorInfo.PublicRequest(user.Email),
+                        Changes = changes,
+                        Reason = "Regular user registered via public user account endpoint."
+                    });
+
                     return Ok("User registered successfully.");
+                }
 
                 return BadRequest("User registered, but failed to assign the User role.");
             }
@@ -162,6 +199,9 @@ namespace DanceApi.Controllers
                     u.Name,
                     u.Surname,
                     u.Email,
+                    u.PhoneNumber,
+                    AllowNewsletter = u.UserProfile != null ? u.UserProfile.AllowNewsletter : true,
+                    AllowSmsMarketing = u.UserProfile != null && u.UserProfile.AllowSmsMarketing,
                 });
 
                 return Ok(result);
@@ -180,15 +220,20 @@ namespace DanceApi.Controllers
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized("User not authenticated.");
 
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.Users
+                .Include(u => u.UserProfile)
+                .FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null || user.IsDeleted) // ❗ Block soft-deleted
                 return NotFound("User not found.");
 
             var result = new
             {
                 user.Email,
+                user.PhoneNumber,
                 user.Name,
                 user.Surname,
+                AllowNewsletter = user.UserProfile?.AllowNewsletter ?? true,
+                AllowSmsMarketing = user.UserProfile?.AllowSmsMarketing ?? false,
             };
 
             return Ok(result);
@@ -199,10 +244,21 @@ namespace DanceApi.Controllers
         public async Task<IActionResult> UpdateCurrentUser([FromBody] UserDto.UpdateUserDto updatedUser)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.Users
+                .Include(u => u.UserProfile)
+                .FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null || user.IsDeleted) // ❗ Block soft-deleted
                 return NotFound("User not found.");
+
+            var changes = new AuditChangeSetBuilder()
+                .Add("name", user.Name, updatedUser.Name ?? user.Name)
+                .Add("surname", user.Surname, updatedUser.Surname ?? user.Surname)
+                .Add("phoneNumber", user.PhoneNumber, updatedUser.PhoneNumber != null
+                    ? string.IsNullOrWhiteSpace(updatedUser.PhoneNumber) ? null : updatedUser.PhoneNumber.Trim()
+                    : user.PhoneNumber)
+                .Add("allowNewsletter", user.UserProfile?.AllowNewsletter, updatedUser.AllowNewsletter ?? user.UserProfile?.AllowNewsletter)
+                .Add("allowSmsMarketing", user.UserProfile?.AllowSmsMarketing, updatedUser.AllowSmsMarketing ?? user.UserProfile?.AllowSmsMarketing);
 
             if (!string.IsNullOrWhiteSpace(updatedUser.Name))
                 user.Name = updatedUser.Name;
@@ -210,9 +266,38 @@ namespace DanceApi.Controllers
             if (!string.IsNullOrWhiteSpace(updatedUser.Surname))
                 user.Surname = updatedUser.Surname;
 
+            if (updatedUser.PhoneNumber != null)
+                user.PhoneNumber = string.IsNullOrWhiteSpace(updatedUser.PhoneNumber) ? null : updatedUser.PhoneNumber.Trim();
+
+            if (user.UserProfile == null)
+            {
+                user.UserProfile = new UserProfile
+                {
+                    UserId = user.Id,
+                    AboutMe = string.Empty
+                };
+            }
+
+            if (updatedUser.AllowNewsletter.HasValue)
+                user.UserProfile.AllowNewsletter = updatedUser.AllowNewsletter.Value;
+
+            if (updatedUser.AllowSmsMarketing.HasValue)
+                user.UserProfile.AllowSmsMarketing = updatedUser.AllowSmsMarketing.Value;
+
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
                 return BadRequest(result.Errors.Select(e => e.Description));
+
+            await _auditLogService.WriteAsync(new AuditWriteRequest
+            {
+                TargetType = AuditLogTargetType.User,
+                TargetId = user.Id,
+                ActionType = AuditLogActionType.Updated,
+                SourceType = AuditLogSourceType.UserPanel,
+                Actor = AuditActorInfo.FromPrincipal(User),
+                Changes = changes.Build(),
+                Reason = "User updated own profile."
+            });
 
             return Ok("User updated successfully.");
         }

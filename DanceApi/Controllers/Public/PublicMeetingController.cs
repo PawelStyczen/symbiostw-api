@@ -1,9 +1,13 @@
 using System.Security.Claims;
 using System.Linq; // <-- needed for Where/Any
 using AutoMapper;
+using DanceApi.Data;
 using DanceApi.Dto;
+using DanceApi.Helper;
 using DanceApi.Interface;
+using DanceApi.Model;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DanceApi.Controllers;
@@ -15,11 +19,25 @@ public class PublicMeetingController : ControllerBase
 {
     private readonly IMeetingRepository _meetingRepository;
     private readonly IMapper _mapper;
+    private readonly AppDbContext _context;
+    private readonly IAuditLogService _auditLogService;
+    private readonly IGuestRegistrationNotificationService _guestRegistrationNotificationService;
+    private readonly ILogger<PublicMeetingController> _logger;
 
-    public PublicMeetingController(IMeetingRepository meetingRepository, IMapper mapper)
+    public PublicMeetingController(
+        IMeetingRepository meetingRepository,
+        IMapper mapper,
+        AppDbContext context,
+        IAuditLogService auditLogService,
+        IGuestRegistrationNotificationService guestRegistrationNotificationService,
+        ILogger<PublicMeetingController> logger)
     {
         _meetingRepository = meetingRepository;
         _mapper = mapper;
+        _context = context;
+        _auditLogService = auditLogService;
+        _guestRegistrationNotificationService = guestRegistrationNotificationService;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -31,8 +49,8 @@ public class PublicMeetingController : ControllerBase
             .Where(m =>
                 // only visible meetings
                 m.IsVisible &&
-                // instructor must exist and not be soft-deleted
-                m.Instructor != null && !m.Instructor.IsDeleted &&
+                // instructor or guest instructor must exist and be active
+                HasActiveInstructor(m) &&
                 // allow all non-individual OR the specific individual type
                 (!m.TypeOfMeeting.IsIndividual ||
                  string.Equals(
@@ -53,14 +71,180 @@ public class PublicMeetingController : ControllerBase
 
         if (meeting == null ||
             !meeting.IsVisible ||
-            meeting.Instructor == null ||
-            meeting.Instructor.IsDeleted)
+            !HasActiveInstructor(meeting))
         {
             return NotFound();
         }
 
         var meetingDto = _mapper.Map<MeetingDto>(meeting);
         return Ok(meetingDto);
+    }
+
+    [HttpPost("{id}/guest-registration")]
+    public async Task<IActionResult> RegisterGuestForMeeting(int id, [FromBody] PublicGuestMeetingRegistrationDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var meeting = await _meetingRepository.GetMeetingByIdAsync(id);
+        if (meeting == null || !meeting.IsVisible || !HasActiveInstructor(meeting))
+            return NotFound($"Meeting with ID {id} not found.");
+
+        var normalizedEmail = dto.Email.Trim().ToLowerInvariant();
+
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+
+        try
+        {
+            var actor = AuditActorInfo.PublicRequest(normalizedEmail);
+            AuditWriteRequest? guestAuditRequest = null;
+            MeetingGuestParticipant? createdParticipant = null;
+
+            var guestUser = await _context.GuestUsers
+                .Include(g => g.GuestUserProfile)
+                .Include(g => g.GuestInstructorProfile)
+                .FirstOrDefaultAsync(g =>
+                    !g.IsDeleted &&
+                    g.GuestUserProfile != null &&
+                    g.GuestInstructorProfile == null &&
+                    g.Email != null &&
+                    g.Email.ToLower() == normalizedEmail);
+
+            if (guestUser == null)
+            {
+                guestUser = new GuestUser
+                {
+                    Name = dto.Name,
+                    Surname = dto.Surname,
+                    Email = normalizedEmail,
+                    PhoneNumber = string.IsNullOrWhiteSpace(dto.PhoneNumber) ? null : dto.PhoneNumber.Trim(),
+                    IsDeleted = false,
+                    GuestUserProfile = new GuestUserProfile
+                    {
+                        AllowNewsletter = dto.AllowNewsletter,
+                        AllowSmsMarketing = dto.AllowSmsMarketing,
+                        IsPendingApproval = true
+                    }
+                };
+
+                _context.GuestUsers.Add(guestUser);
+                await _context.SaveChangesAsync();
+
+                guestAuditRequest = new AuditWriteRequest
+                {
+                    TargetType = AuditLogTargetType.GuestUser,
+                    TargetId = guestUser.Id.ToString(),
+                    ActionType = AuditLogActionType.Created,
+                    SourceType = AuditLogSourceType.PublicRequest,
+                    Actor = actor,
+                    Changes = new AuditChangeSetBuilder()
+                        .AddCreated("name", guestUser.Name)
+                        .AddCreated("surname", guestUser.Surname)
+                        .AddCreated("email", guestUser.Email)
+                        .AddCreated("phoneNumber", guestUser.PhoneNumber)
+                        .AddCreated("allowNewsletter", guestUser.GuestUserProfile?.AllowNewsletter)
+                        .AddCreated("allowSmsMarketing", guestUser.GuestUserProfile?.AllowSmsMarketing)
+                        .Build(),
+                    Reason = "Guest user created from public meeting registration."
+                };
+            }
+            else
+            {
+                var guestChanges = new AuditChangeSetBuilder()
+                    .Add("name", guestUser.Name, dto.Name)
+                    .Add("surname", guestUser.Surname, dto.Surname)
+                    .Add("phoneNumber", guestUser.PhoneNumber, string.IsNullOrWhiteSpace(dto.PhoneNumber) ? null : dto.PhoneNumber.Trim())
+                    .Add("allowNewsletter", guestUser.GuestUserProfile?.AllowNewsletter, dto.AllowNewsletter)
+                    .Add("allowSmsMarketing", guestUser.GuestUserProfile?.AllowSmsMarketing, dto.AllowSmsMarketing);
+
+                guestUser.Name = dto.Name;
+                guestUser.Surname = dto.Surname;
+                guestUser.PhoneNumber = string.IsNullOrWhiteSpace(dto.PhoneNumber) ? null : dto.PhoneNumber.Trim();
+                guestUser.GuestUserProfile!.AllowNewsletter = dto.AllowNewsletter;
+                guestUser.GuestUserProfile.AllowSmsMarketing = dto.AllowSmsMarketing;
+
+                if (guestChanges.Count > 0)
+                {
+                    guestAuditRequest = new AuditWriteRequest
+                    {
+                        TargetType = AuditLogTargetType.GuestUser,
+                        TargetId = guestUser.Id.ToString(),
+                        ActionType = AuditLogActionType.Updated,
+                        SourceType = AuditLogSourceType.PublicRequest,
+                        Actor = actor,
+                        Changes = guestChanges.Build(),
+                        Reason = "Guest user data refreshed from public meeting registration."
+                    };
+                }
+            }
+
+            var existingParticipant = await _context.MeetingGuestParticipants
+                .FirstOrDefaultAsync(p => p.MeetingId == id && p.GuestUserId == guestUser.Id);
+
+            if (existingParticipant != null)
+            {
+                await transaction.RollbackAsync();
+                return BadRequest("Registration request already exists for this meeting.");
+            }
+
+            createdParticipant = new MeetingGuestParticipant
+            {
+                MeetingId = id,
+                GuestUserId = guestUser.Id,
+                HasPaid = false,
+                RegistrationStatus = ParticipantRegistrationStatus.Pending,
+                CreatedFromPublicRequest = true,
+                RequestedAt = DateTime.UtcNow
+            };
+
+            _context.MeetingGuestParticipants.Add(createdParticipant);
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            if (guestAuditRequest != null)
+                await _auditLogService.WriteAsync(guestAuditRequest);
+
+            if (createdParticipant != null)
+            {
+                await _auditLogService.WriteAsync(new AuditWriteRequest
+                {
+                    TargetType = AuditLogTargetType.MeetingGuestParticipant,
+                    TargetId = createdParticipant.Id.ToString(),
+                    ActionType = AuditLogActionType.Created,
+                    SourceType = AuditLogSourceType.PublicRequest,
+                    Actor = actor,
+                    Changes = new AuditChangeSetBuilder()
+                        .AddCreated("meetingId", createdParticipant.MeetingId)
+                        .AddCreated("guestUserId", createdParticipant.GuestUserId)
+                        .AddCreated("registrationStatus", createdParticipant.RegistrationStatus)
+                        .AddCreated("createdFromPublicRequest", createdParticipant.CreatedFromPublicRequest)
+                        .AddCreated("requestedAt", createdParticipant.RequestedAt)
+                        .Build(),
+                    Reason = "Guest participant registration created from public meeting request."
+                });
+            }
+
+            var emailSent = await _guestRegistrationNotificationService.SendPendingApprovalNotificationAsync(guestUser, meeting);
+            if (!emailSent)
+            {
+                _logger.LogWarning(
+                    "Guest registration saved but confirmation email was not sent. GuestUserId: {GuestUserId}, MeetingId: {MeetingId}",
+                    guestUser.Id,
+                    meeting.Id);
+            }
+
+            return Ok(new
+            {
+                Message = "Registration request submitted.",
+                Status = ParticipantRegistrationStatus.Pending.ToString()
+            });
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     [Authorize]
@@ -72,8 +256,7 @@ public class PublicMeetingController : ControllerBase
 
         var meeting = await _meetingRepository.GetMeetingByIdAsync(addParticipantDto.MeetingId);
         if (meeting == null ||
-            meeting.Instructor == null ||
-            meeting.Instructor.IsDeleted)
+            !HasActiveInstructor(meeting))
         {
             return NotFound($"Meeting with ID {addParticipantDto.MeetingId} not found.");
         }
@@ -115,9 +298,9 @@ public class PublicMeetingController : ControllerBase
 
         var meetings = await _meetingRepository.GetMeetingsByUserIdAsync(userId);
 
-        // keep only meetings with active (non-deleted) instructor
+        // keep only meetings with active (non-deleted) instructor or guest instructor
         var filtered = meetings
-            .Where(m => m.Instructor != null && !m.Instructor.IsDeleted)
+            .Where(HasActiveInstructor)
             .ToList();
 
         var meetingDtos = _mapper.Map<IEnumerable<MeetingDto>>(filtered);
@@ -133,9 +316,9 @@ public class PublicMeetingController : ControllerBase
 
         var upcomingMeetings = await _meetingRepository.GetUpcomingMeetingsByUserIdAsync(userId);
 
-        // keep only meetings with active (non-deleted) instructor
+        // keep only meetings with active (non-deleted) instructor or guest instructor
         var filtered = upcomingMeetings
-            .Where(m => m.Instructor != null && !m.Instructor.IsDeleted)
+            .Where(HasActiveInstructor)
             .ToList();
 
         var meetingDtos = _mapper.Map<IEnumerable<MeetingDto>>(filtered);
@@ -150,12 +333,11 @@ public class PublicMeetingController : ControllerBase
         var nowUtc = DateTime.UtcNow;
         var all = await _meetingRepository.GetAllMeetingsAsync();
 
-        // visible, future, instructor active, and not "Indywidualne spotkanie | wolne miejsce"
+        // visible, future, active instructor/guest instructor, and not "Indywidualne spotkanie | wolne miejsce"
         var baseQuery = all
             .Where(m => m.IsVisible &&
                         m.Date >= nowUtc &&
-                        m.Instructor != null &&
-                        !m.Instructor.IsDeleted &&
+                        HasActiveInstructor(m) &&
                         !string.Equals(
                             m.TypeOfMeeting?.Name,
                             "Indywidualne spotkanie | wolne miejsce",
@@ -186,6 +368,12 @@ public class PublicMeetingController : ControllerBase
 
         var dto = _mapper.Map<List<MeetingDto>>(resultMeetings);
         return Ok(dto);
+    }
+
+    private static bool HasActiveInstructor(DanceApi.Model.Meeting meeting)
+    {
+        return (meeting.Instructor != null && !meeting.Instructor.IsDeleted)
+               || (meeting.GuestInstructor != null && !meeting.GuestInstructor.IsDeleted);
     }
     
 }

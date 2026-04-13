@@ -17,16 +17,19 @@ public class AdminEventController : BaseController
     private readonly ITypeOfMeetingRepository _typeRepo;
     private readonly IMeetingRepository _meetingRepo;
     private readonly IMapper _mapper;
+    private readonly IAdminNoteService _adminNoteService;
 
 
     public AdminEventController(
         ITypeOfMeetingRepository typeRepo,
         IMeetingRepository meetingRepo,
-        IMapper mapper)
+        IMapper mapper,
+        IAdminNoteService adminNoteService)
     {
         _typeRepo = typeRepo;
         _meetingRepo = meetingRepo;
         _mapper = mapper;
+        _adminNoteService = adminNoteService;
     }
 
     // LIST ALL EVENTS
@@ -44,6 +47,27 @@ public class AdminEventController : BaseController
             .ToList();
 
         var dto = _mapper.Map<IEnumerable<MeetingDto>>(events);
+        return Ok(dto);
+    }
+
+    [Authorize]
+    [HttpGet("{meetingId}")]
+    public async Task<IActionResult> GetEventById(int meetingId)
+    {
+        var userId = GetUserId();
+        if (string.IsNullOrWhiteSpace(userId))
+            return Unauthorized();
+
+        var meeting = await _meetingRepo.GetMeetingByIdAsync(meetingId);
+        if (meeting == null || meeting.TypeOfMeeting == null || !meeting.TypeOfMeeting.IsEvent)
+            return NotFound("Event not found.");
+
+        var dto = _mapper.Map<MeetingDetailsDto>(meeting);
+        dto.Notes = await _adminNoteService.GetNotesForTargetAsync(
+            AdminNoteTargetType.Event,
+            meeting.Id.ToString(),
+            userId);
+
         return Ok(dto);
     }
     
@@ -90,12 +114,28 @@ public class AdminEventController : BaseController
         var createdType = await _typeRepo.CreateTypeOfMeetingAsync(type, userId);
 
         // 2️⃣ create Meeting (termin)
+        int? guestInstructorId = null;
+        string? instructorId = null;
+
+        if (dto.IsGuestInstructor)
+        {
+            if (!int.TryParse(dto.InstructorId, out var parsedGuestInstructorId))
+                return BadRequest("Guest instructor id must be a valid integer.");
+
+            guestInstructorId = parsedGuestInstructorId;
+        }
+        else
+        {
+            instructorId = dto.InstructorId;
+        }
+
         var meeting = new Meeting
         {
             Date = dto.Date,
             Duration = dto.Duration,
             LocationId = dto.LocationId,
-            InstructorId = dto.InstructorId,
+            InstructorId = instructorId,
+            GuestInstructorId = guestInstructorId,
             TypeOfMeetingId = createdType.Id,
             Price = dto.Price, // snapshot
             Level = dto.Level,
@@ -150,10 +190,23 @@ public class AdminEventController : BaseController
         await _typeRepo.UpdateTypeOfMeetingAsync(type, userId);
 
         // update MEETING
+        if (dto.IsGuestInstructor)
+        {
+            if (!int.TryParse(dto.InstructorId, out var parsedGuestInstructorId))
+                return BadRequest("Guest instructor id must be a valid integer.");
+
+            meeting.InstructorId = null;
+            meeting.GuestInstructorId = parsedGuestInstructorId;
+        }
+        else
+        {
+            meeting.InstructorId = dto.InstructorId;
+            meeting.GuestInstructorId = null;
+        }
+
         meeting.Date = dto.Date;
         meeting.Duration = dto.Duration;
         meeting.LocationId = dto.LocationId;
-        meeting.InstructorId = dto.InstructorId;
         meeting.Level = dto.Level;
         meeting.Price = dto.Price;
 

@@ -13,6 +13,7 @@ public interface IUserRepository
     Task<IEnumerable<User>> GetUsersByRoleAsync(string roleName); 
     
     void AddInstructorProfile(InstructorProfile profile); 
+    void AddUserProfile(UserProfile profile);
     Task SaveChangesAsync();
     
     void RemoveInstructorProfile(InstructorProfile profile); 

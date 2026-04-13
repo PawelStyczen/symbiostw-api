@@ -30,6 +30,9 @@ namespace DanceApi.Data
         public DbSet<GuestUserProfile> GuestUserProfiles { get; set; }
         public DbSet<GuestInstructorProfile> GuestInstructorProfiles { get; set; }
         public DbSet<MeetingGuestParticipant> MeetingGuestParticipants { get; set; }
+        public DbSet<NotificationLog> NotificationLogs { get; set; }
+        public DbSet<AdminNote> AdminNotes { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -56,6 +59,7 @@ namespace DanceApi.Data
             ConfigureBaseEntityRelationships<Review>(modelBuilder);
             ConfigureBaseEntityRelationships<MembershipPlan>(modelBuilder);
             ConfigureBaseEntityRelationships<UserMembership>(modelBuilder);
+            ConfigureBaseEntityRelationships<AdminNote>(modelBuilder);
 
             modelBuilder.Entity<MeetingParticipant>()
                 .HasOne(mp => mp.Meeting)
@@ -144,6 +148,54 @@ namespace DanceApi.Data
                 .WithOne(gu => gu.GuestInstructorProfile)
                 .HasForeignKey<GuestInstructorProfile>(gip => gip.GuestUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<NotificationLog>()
+                .HasIndex(log => log.RequestedAtUtc);
+
+            modelBuilder.Entity<NotificationLog>()
+                .HasIndex(log => log.Recipient);
+
+            modelBuilder.Entity<NotificationLog>()
+                .HasIndex(log => log.ProviderOperationId);
+
+            modelBuilder.Entity<NotificationLog>()
+                .HasIndex(log => log.Channel);
+
+            modelBuilder.Entity<NotificationLog>()
+                .HasIndex(log => log.Kind);
+
+            modelBuilder.Entity<NotificationLog>()
+                .HasIndex(log => log.Status);
+
+            modelBuilder.Entity<NotificationLog>()
+                .HasOne(log => log.GuestUser)
+                .WithMany()
+                .HasForeignKey(log => log.GuestUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<NotificationLog>()
+                .HasOne(log => log.Meeting)
+                .WithMany()
+                .HasForeignKey(log => log.MeetingId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AdminNote>()
+                .HasIndex(note => new { note.TargetType, note.TargetId, note.CreatedById });
+
+            modelBuilder.Entity<AdminNote>()
+                .HasIndex(note => note.CreatedDate);
+
+            modelBuilder.Entity<AuditLog>()
+                .HasIndex(log => log.ChangedAtUtc);
+
+            modelBuilder.Entity<AuditLog>()
+                .HasIndex(log => new { log.TargetType, log.TargetId, log.ChangedAtUtc });
+
+            modelBuilder.Entity<AuditLog>()
+                .HasIndex(log => log.SourceType);
+
+            modelBuilder.Entity<AuditLog>()
+                .HasIndex(log => log.ActionType);
         }
 
         private void ConfigureBaseEntityRelationships<TEntity>(ModelBuilder modelBuilder)

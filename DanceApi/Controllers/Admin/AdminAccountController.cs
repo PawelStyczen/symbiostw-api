@@ -2,7 +2,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
+using DanceApi.Data;
 using DanceApi.Dto;
+using DanceApi.Helper;
 using DanceApi.Interface;
 using DanceApi.Model;
 using Microsoft.AspNetCore.Authorization;
@@ -27,6 +29,9 @@ namespace DanceApi.Controllers.Admin
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper; // <-- add this
+        private readonly AppDbContext _context;
+        private readonly IAdminNoteService _adminNoteService;
+        private readonly IAuditLogService _auditLogService;
         
 
         public AdminAccountController(
@@ -34,7 +39,10 @@ namespace DanceApi.Controllers.Admin
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             IMapper mapper,
-            IConfiguration configuration
+            IConfiguration configuration,
+            AppDbContext context,
+            IAdminNoteService adminNoteService,
+            IAuditLogService auditLogService
             
                 ) // <-- add this
         
@@ -44,6 +52,9 @@ namespace DanceApi.Controllers.Admin
             _userManager = userManager;
             _mapper = mapper; // <-- add this
             _configuration = configuration;
+            _context = context;
+            _adminNoteService = adminNoteService;
+            _auditLogService = auditLogService;
         }
 
         // ===== Instructors =====
@@ -63,6 +74,7 @@ namespace DanceApi.Controllers.Admin
                 Email = model.Email,
                 Name = model.Name,
                 Surname = model.Surname,
+                PhoneNumber = string.IsNullOrWhiteSpace(model.PhoneNumber) ? null : model.PhoneNumber.Trim()
             };
 
             var result = await _userRepository.CreateUserAsync(instructor, model.Password);
@@ -72,6 +84,14 @@ namespace DanceApi.Controllers.Admin
             var roleAssignmentResult = await _userRepository.AddUserToRoleAsync(instructor, "Instructor");
             if (!roleAssignmentResult)
                 return BadRequest("User registered, but failed to assign the Instructor role.");
+
+            _userRepository.AddUserProfile(new UserProfile
+            {
+                UserId = instructor.Id,
+                AllowNewsletter = model.AllowNewsletter,
+                AllowSmsMarketing = model.AllowSmsMarketing,
+                AboutMe = string.Empty
+            });
 
             string? imageUrl = null;
             if (image != null)
@@ -102,6 +122,27 @@ namespace DanceApi.Controllers.Admin
 
             _userRepository.AddInstructorProfile(instructorProfile);
             await _userRepository.SaveChangesAsync();
+
+            var changes = new AuditChangeSetBuilder()
+                .AddCreated("name", instructor.Name)
+                .AddCreated("surname", instructor.Surname)
+                .AddCreated("email", instructor.Email)
+                .AddCreated("phoneNumber", instructor.PhoneNumber)
+                .AddCreated("allowNewsletter", model.AllowNewsletter)
+                .AddCreated("allowSmsMarketing", model.AllowSmsMarketing)
+                .AddCreated("role", "Instructor")
+                .Build();
+
+            await _auditLogService.WriteAsync(new AuditWriteRequest
+            {
+                TargetType = AuditLogTargetType.User,
+                TargetId = instructor.Id,
+                ActionType = AuditLogActionType.Created,
+                SourceType = AuditLogSourceType.AdminPanel,
+                Actor = AuditActorInfo.FromPrincipal(User),
+                Changes = changes,
+                Reason = "Instructor registered from admin panel."
+            });
 
             return Ok("Instructor registered successfully.");
         }
@@ -226,11 +267,32 @@ namespace DanceApi.Controllers.Admin
                 .Where(i => !i.IsDeleted)
                 .ToList();
 
-            if (!active.Any())
-                return NotFound("No instructors found.");
-
             var dto = _mapper.Map<IEnumerable<InstructorDto>>(active);
             return Ok(dto);
+        }
+
+        [HttpGet("Instructors/All")]
+        public async Task<IActionResult> GetAllCombinedInstructors()
+        {
+            var instructors = await _userRepository.GetUsersByRoleAsync("Instructor");
+            var activeRegularInstructors = instructors
+                .Where(i => !i.IsDeleted && i.InstructorProfile != null)
+                .ToList();
+
+            var guestInstructors = await _context.GuestUsers
+                .Include(g => g.GuestInstructorProfile)
+                .Where(g => !g.IsDeleted && g.GuestInstructorProfile != null)
+                .ToListAsync();
+
+            var combined = _mapper.Map<List<CombinedInstructorDto>>(activeRegularInstructors);
+            combined.AddRange(_mapper.Map<List<CombinedInstructorDto>>(guestInstructors));
+
+            var ordered = combined
+                .OrderBy(i => i.Surname)
+                .ThenBy(i => i.Name)
+                .ToList();
+
+            return Ok(ordered);
         }
 
         [HttpGet("Instructors/{id}")]
@@ -263,9 +325,22 @@ public async Task<IActionResult> UpdateInstructor(
     if (instructor == null || instructor.IsDeleted || instructor.InstructorProfile == null)
         return NotFound($"Instructor with ID {id} not found.");
 
+    var changes = new AuditChangeSetBuilder()
+        .Add("name", instructor.Name, dto.Name)
+        .Add("surname", instructor.Surname, dto.Surname)
+        .Add("phoneNumber", instructor.PhoneNumber, string.IsNullOrWhiteSpace(dto.PhoneNumber) ? null : dto.PhoneNumber.Trim())
+        .Add("bio", instructor.InstructorProfile.Bio, dto.Bio)
+        .Add("experienceYears", instructor.InstructorProfile.ExperienceYears, dto.ExperienceYears)
+        .Add("specialization", instructor.InstructorProfile.Specialization, dto.Specialization)
+        .Add("facebookLink", instructor.InstructorProfile.FacebookLink, dto.FacebookLink)
+        .Add("instagramLink", instructor.InstructorProfile.InstagramLink, dto.InstagramLink)
+        .Add("tiktokLink", instructor.InstructorProfile.TikTokLink, dto.TikTokLink)
+        .Add("imageUrl", instructor.InstructorProfile.ImageUrl, image != null ? null : dto.ImageUrl);
+
     // Update profile fields
     instructor.Name = dto.Name;
     instructor.Surname = dto.Surname;
+    instructor.PhoneNumber = string.IsNullOrWhiteSpace(dto.PhoneNumber) ? null : dto.PhoneNumber.Trim();
     instructor.InstructorProfile.Bio = dto.Bio;
     instructor.InstructorProfile.ExperienceYears = dto.ExperienceYears;
     instructor.InstructorProfile.Specialization = dto.Specialization;
@@ -306,6 +381,18 @@ public async Task<IActionResult> UpdateInstructor(
         return BadRequest(result.Errors.Select(e => e.Description));
 
     await _userRepository.SaveChangesAsync();
+
+    await _auditLogService.WriteAsync(new AuditWriteRequest
+    {
+        TargetType = AuditLogTargetType.User,
+        TargetId = instructor.Id,
+        ActionType = AuditLogActionType.Updated,
+        SourceType = AuditLogSourceType.AdminPanel,
+        Actor = AuditActorInfo.FromPrincipal(User),
+        Changes = changes.Build(),
+        Reason = "Instructor updated from admin panel."
+    });
+
     return NoContent();
 }
         [HttpDelete("Instructors/{id}")]
@@ -334,17 +421,21 @@ public async Task<IActionResult> UpdateInstructor(
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserById(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
+            var user = await _userManager.Users
+                .Include(u => u.UserProfile)
+                .FirstOrDefaultAsync(u => u.Id == id);
             if (user == null || user.IsDeleted)
                 return NotFound("User not found.");
 
-            var result = new
-            {
+            var result = _mapper.Map<AdminUserDetailsDto>(user);
+            var adminUserId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(adminUserId))
+                return Unauthorized("User is not authorized.");
+
+            result.Notes = await _adminNoteService.GetNotesForTargetAsync(
+                AdminNoteTargetType.User,
                 user.Id,
-                user.Name,
-                user.Surname,
-                user.Email
-            };
+                adminUserId);
 
             return Ok(result);
         }
@@ -361,32 +452,97 @@ public async Task<IActionResult> UpdateInstructor(
                     u.Name,
                     u.Surname,
                     u.Email,
+                    u.PhoneNumber,
+                    AllowNewsletter = u.UserProfile != null ? u.UserProfile.AllowNewsletter : true,
+                    AllowSmsMarketing = u.UserProfile != null && u.UserProfile.AllowSmsMarketing,
                     u.UserName
                 })
                 .ToList();
 
-            if (!filtered.Any())
-                return NotFound("No regular users found.");
-
             return Ok(filtered);
+        }
+
+        [HttpGet("Users/All")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllCombinedUsers()
+        {
+            var users = await _userRepository.GetUsersByRoleAsync("User");
+            var activeRegularUsers = users
+                .Where(u => !u.IsDeleted)
+                .ToList();
+
+            var guestUsers = await _context.GuestUsers
+                .Include(g => g.GuestUserProfile)
+                .Include(g => g.GuestInstructorProfile)
+                .Where(g => !g.IsDeleted)
+                .Where(g => g.GuestUserProfile != null &&
+                            g.GuestInstructorProfile == null &&
+                            !g.GuestUserProfile.IsPendingApproval)
+                .ToListAsync();
+
+            var combined = _mapper.Map<List<CombinedUserDto>>(activeRegularUsers);
+            combined.AddRange(_mapper.Map<List<CombinedUserDto>>(guestUsers));
+
+            var ordered = combined
+                .OrderBy(u => u.Surname)
+                .ThenBy(u => u.Name)
+                .ToList();
+
+            return Ok(ordered);
         }
 
         [HttpPut("Users/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] RegisterModel model)
         {
-            var user = await _userManager.FindByIdAsync(id);
+            var user = await _userManager.Users
+                .Include(u => u.UserProfile)
+                .FirstOrDefaultAsync(u => u.Id == id);
             if (user == null || user.IsDeleted)
                 return NotFound("User not found.");
+
+            var changes = new AuditChangeSetBuilder()
+                .Add("name", user.Name, model.Name)
+                .Add("surname", user.Surname, model.Surname)
+                .Add("email", user.Email, model.Email)
+                .Add("phoneNumber", user.PhoneNumber, string.IsNullOrWhiteSpace(model.PhoneNumber) ? null : model.PhoneNumber.Trim())
+                .Add("allowNewsletter", user.UserProfile?.AllowNewsletter, model.AllowNewsletter)
+                .Add("allowSmsMarketing", user.UserProfile?.AllowSmsMarketing, model.AllowSmsMarketing);
 
             user.Name = model.Name;
             user.Surname = model.Surname;
             user.Email = model.Email;
             user.UserName = model.Email;
+            user.PhoneNumber = string.IsNullOrWhiteSpace(model.PhoneNumber) ? null : model.PhoneNumber.Trim();
+
+            if (user.UserProfile == null)
+            {
+                user.UserProfile = new UserProfile
+                {
+                    UserId = user.Id,
+                    AboutMe = string.Empty
+                };
+            }
+
+            user.UserProfile.AllowNewsletter = model.AllowNewsletter;
+            user.UserProfile.AllowSmsMarketing = model.AllowSmsMarketing;
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
                 return BadRequest(result.Errors.Select(e => e.Description));
+
+            await _userRepository.SaveChangesAsync();
+
+            await _auditLogService.WriteAsync(new AuditWriteRequest
+            {
+                TargetType = AuditLogTargetType.User,
+                TargetId = user.Id,
+                ActionType = AuditLogActionType.Updated,
+                SourceType = AuditLogSourceType.AdminPanel,
+                Actor = AuditActorInfo.FromPrincipal(User),
+                Changes = changes.Build(),
+                Reason = "Regular user updated from admin panel."
+            });
 
             return Ok("User updated successfully.");
         }
@@ -420,15 +576,53 @@ public async Task<IActionResult> UpdateInstructor(
                 UserName = model.Email,
                 Email = model.Email,
                 Name = model.Name,
-                Surname = model.Surname
+                Surname = model.Surname,
+                PhoneNumber = string.IsNullOrWhiteSpace(model.PhoneNumber) ? null : model.PhoneNumber.Trim()
             };
 
             var result = await _userRepository.CreateUserAsync(user, model.Password);
             if (!result.Succeeded)
                 return BadRequest(result.Errors.Select(e => e.Description));
 
+            _userRepository.AddUserProfile(new UserProfile
+            {
+                UserId = user.Id,
+                AllowNewsletter = model.AllowNewsletter,
+                AllowSmsMarketing = model.AllowSmsMarketing,
+                AboutMe = string.Empty
+            });
+            await _userRepository.SaveChangesAsync();
+
             if (!await _userRepository.AddUserToRoleAsync(user, "User"))
                 return BadRequest("User registered, but failed to assign the User role.");
+
+            var sourceType = User?.Identity?.IsAuthenticated == true
+                ? AuditLogSourceType.AdminPanel
+                : AuditLogSourceType.PublicRequest;
+
+            var actor = User?.Identity?.IsAuthenticated == true
+                ? AuditActorInfo.FromPrincipal(User)
+                : AuditActorInfo.PublicRequest(user.Email);
+
+            var changes = new AuditChangeSetBuilder()
+                .AddCreated("name", user.Name)
+                .AddCreated("surname", user.Surname)
+                .AddCreated("email", user.Email)
+                .AddCreated("phoneNumber", user.PhoneNumber)
+                .AddCreated("allowNewsletter", model.AllowNewsletter)
+                .AddCreated("allowSmsMarketing", model.AllowSmsMarketing)
+                .Build();
+
+            await _auditLogService.WriteAsync(new AuditWriteRequest
+            {
+                TargetType = AuditLogTargetType.User,
+                TargetId = user.Id,
+                ActionType = AuditLogActionType.Created,
+                SourceType = sourceType,
+                Actor = actor,
+                Changes = changes,
+                Reason = "Regular user registered via admin account endpoint."
+            });
 
             return Ok("User registered successfully.");
         }

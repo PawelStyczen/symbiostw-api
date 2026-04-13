@@ -17,6 +17,9 @@ public class GuestUser
     [MaxLength(256)]
     public string? Email { get; set; }
 
+    [MaxLength(32)]
+    public string? PhoneNumber { get; set; }
+
     public bool IsDeleted { get; set; } = false;
 
     public GuestUserProfile? GuestUserProfile { get; set; }

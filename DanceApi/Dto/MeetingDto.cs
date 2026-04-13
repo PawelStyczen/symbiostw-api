@@ -19,6 +19,7 @@ namespace DanceApi.Dto
         
         public string InstructorId { get; set; }
         public string InstructorName { get; set; }
+        public bool IsGuestInstructor { get; set; }
         public int TypeOfMeetingId { get; set; }
         public string TypeOfMeetingName { get; set; }
         public decimal Price { get; set; }
@@ -37,6 +38,12 @@ namespace DanceApi.Dto
         
         public string? Description { get; set; }
         public string? ShortDescription { get; set; }
+        public bool? ParticipantHasPaid { get; set; }
+    }
+
+    public class MeetingDetailsDto : MeetingDto
+    {
+        public List<AdminNoteReadDto> Notes { get; set; } = new();
     }
 
 
@@ -47,6 +54,7 @@ namespace DanceApi.Dto
         public int Duration { get; set; }
         public int LocationId { get; set; }
         public string InstructorId { get; set; }
+        public bool IsGuestInstructor { get; set; }
         public int TypeOfMeetingId { get; set; }
      
         public int? MaxParticipants { get; set; }
@@ -63,19 +71,138 @@ namespace DanceApi.Dto
         public string UserId { get; set; } = string.Empty;
         
     }
+
+    public class AddGuestParticipantDto
+    {
+        public int MeetingId { get; set; }
+        public int GuestUserId { get; set; }
+    }
     
     public class RemoveParticipantDto
     {
         public int MeetingId { get; set; }
         public string UserId { get; set; } = string.Empty;
     }
+
+    public class RemoveGuestParticipantDto
+    {
+        public int MeetingId { get; set; }
+        public int GuestUserId { get; set; }
+    }
     
     public class ParticipantDto
     {
         public string Id { get; set; }
+        public bool IsGuest { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
-        public string Email { get; set; }
+        public string? Email { get; set; }
+        public string? PhoneNumber { get; set; }
+        public bool HasPaid { get; set; }
+        public string RegistrationStatus { get; set; } = string.Empty;
+        public bool CreatedFromPublicRequest { get; set; }
+        public DateTime? RequestedAt { get; set; }
+    }
+
+    public class PendingGuestRegistrationDto
+    {
+        public int MeetingId { get; set; }
+        public DateTime MeetingDate { get; set; }
+        public string TypeOfMeetingName { get; set; } = string.Empty;
+        public string LocationName { get; set; } = string.Empty;
+        public string LocationCity { get; set; } = string.Empty;
+        public int GuestUserId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Surname { get; set; } = string.Empty;
+        public string? Email { get; set; }
+        public string? PhoneNumber { get; set; }
+        public bool AllowNewsletter { get; set; }
+        public bool AllowSmsMarketing { get; set; }
+        public DateTime? RequestedAt { get; set; }
+        public string RegistrationStatus { get; set; } = string.Empty;
+    }
+
+    public class UnpaidMeetingParticipantsDto
+    {
+        public UnpaidMeetingSummaryDto Meeting { get; set; } = null!;
+        public List<ParticipantDto> Participants { get; set; } = new();
+    }
+
+    public class UnpaidMeetingSummaryDto
+    {
+        public int Id { get; set; }
+        public DateTime Date { get; set; }
+        public int Duration { get; set; }
+        public string TypeOfMeetingName { get; set; } = string.Empty;
+        public string LocationName { get; set; } = string.Empty;
+        public string LocationCity { get; set; } = string.Empty;
+        public string InstructorName { get; set; } = string.Empty;
+        public bool IsGuestInstructor { get; set; }
+        public decimal Price { get; set; }
+    }
+
+    public class UpdateParticipantPaymentStatusDto
+    {
+        public string Id { get; set; } = string.Empty;
+        public bool IsGuest { get; set; }
+        public bool HasPaid { get; set; }
+    }
+
+    public class UpdateParticipantRegistrationStatusDto
+    {
+        public string Id { get; set; } = string.Empty;
+        public bool IsGuest { get; set; }
+        public string Status { get; set; } = string.Empty;
+    }
+
+    public class PublicGuestMeetingRegistrationDto
+    {
+        [Required]
+        public string Name { get; set; } = string.Empty;
+
+        [Required]
+        public string Surname { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Phone]
+        public string? PhoneNumber { get; set; }
+
+        public bool AllowNewsletter { get; set; } = true;
+
+        public bool AllowSmsMarketing { get; set; } = false;
+    }
+
+    public class BulkParticipantItemDto
+    {
+        public string Id { get; set; } = string.Empty;
+        public bool IsGuest { get; set; }
+    }
+
+    public class BulkParticipantsDto
+    {
+        public int MeetingId { get; set; }
+        public List<BulkParticipantItemDto> Participants { get; set; } = new();
+    }
+
+    public class BulkParticipantOperationItemDto
+    {
+        public string Id { get; set; } = string.Empty;
+        public bool IsGuest { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public string? Message { get; set; }
+    }
+
+    public class BulkParticipantOperationResponseDto
+    {
+        public int MeetingId { get; set; }
+        public string Action { get; set; } = string.Empty;
+        public int SucceededCount { get; set; }
+        public int FailedCount { get; set; }
+        public int SkippedCount { get; set; }
+        public List<BulkParticipantOperationItemDto> Results { get; set; } = new();
     }
     
     public class CopyMonthDto

@@ -33,13 +33,14 @@ public class PublicEventsController : ControllerBase
             .Include(m => m.TypeOfMeeting)
             .Include(m => m.Location)
             .Include(m => m.Instructor)
+            .Include(m => m.GuestInstructor)
             .Where(m =>
                     !m.IsDeleted &&
                     m.IsVisible &&
                     m.TypeOfMeeting != null &&
-                    m.TypeOfMeeting.IsEvent
-                // opcjonalnie:
-                // && m.Instructor != null && !m.Instructor.IsDeleted
+                    m.TypeOfMeeting.IsEvent &&
+                    ((m.Instructor != null && !m.Instructor.IsDeleted) ||
+                     (m.GuestInstructor != null && !m.GuestInstructor.IsDeleted))
             );
 
         // 1) trwające teraz

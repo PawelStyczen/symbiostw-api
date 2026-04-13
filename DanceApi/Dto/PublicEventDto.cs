@@ -24,6 +24,7 @@ public class PublicEventDto
 
     public string InstructorId { get; set; }
     public string InstructorName { get; set; }
+    public bool IsGuestInstructor { get; set; }
 
     public SkillLevel? Level { get; set; }
 

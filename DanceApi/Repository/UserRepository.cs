@@ -22,7 +22,8 @@ public class UserRepository : IUserRepository
     public async Task<User> GetUserByIdAsync(string userId)
     {
         return await _userManager.Users
-            .Include(u => u.InstructorProfile)  
+            .Include(u => u.InstructorProfile)
+            .Include(u => u.UserProfile)
             .FirstOrDefaultAsync(u => u.Id == userId);
     }
 
@@ -53,6 +54,7 @@ public class UserRepository : IUserRepository
                 .Any(ur => ur.UserId == u.Id && _context.Roles
                     .Any(r => r.Id == ur.RoleId && r.Name == roleName)))
             .Include(u => u.InstructorProfile)
+            .Include(u => u.UserProfile)
             .ToListAsync();
 
         return usersInRole;
@@ -62,6 +64,11 @@ public class UserRepository : IUserRepository
     public void AddInstructorProfile(InstructorProfile profile)
     {
         _context.InstructorProfiles.Add(profile);
+    }
+
+    public void AddUserProfile(UserProfile profile)
+    {
+        _context.UserProfiles.Add(profile);
     }
     
     public void RemoveInstructorProfile(InstructorProfile profile)

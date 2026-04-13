@@ -12,6 +12,8 @@ public class UserProfile
     public User User { get; set; } 
     
     public bool AllowNewsletter { get; set; } = true;
+
+    public bool AllowSmsMarketing { get; set; } = false;
     
     [MaxLength(2000)]
     public string AboutMe { get; set; }

@@ -30,6 +30,8 @@ public class EventDto
         [Required]
         public string InstructorId { get; set; } = null!;
 
+        public bool IsGuestInstructor { get; set; }
+
         public SkillLevel? Level { get; set; }
         public int? MaxParticipants { get; set; }
     }
@@ -50,6 +52,7 @@ public class EventDto
         public int Duration { get; set; }
         public int LocationId { get; set; }
         public string InstructorId { get; set; }
+        public bool IsGuestInstructor { get; set; }
         public SkillLevel? Level { get; set; }
     }
 }

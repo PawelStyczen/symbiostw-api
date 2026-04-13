@@ -9,4 +9,5 @@ public class MeetingParticipant
     public string UserId { get; set; }
     public User User { get; set; }
 
+    public bool HasPaid { get; set; } = false;
 }

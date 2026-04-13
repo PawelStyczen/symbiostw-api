@@ -5,6 +5,7 @@ using DanceApi.Helper;
 using DanceApi.Interface;
 using DanceApi.Model;
 using DanceApi.Repository;
+using DanceApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -110,7 +111,13 @@ builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
 builder.Services.AddScoped<INewsArticleRepository, NewsArticleRepository>();
 builder.Services.AddScoped<IContactMessageRepository, ContactMessageRepository>();
 builder.Services.AddScoped<IPayURepository, PayURepository>();
+builder.Services.AddScoped<IAdminNoteService, AdminNoteService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+builder.Services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
+builder.Services.AddScoped<INotificationChannelSender, AzureCommunicationEmailNotificationSender>();
+builder.Services.AddScoped<IGuestRegistrationNotificationService, GuestRegistrationNotificationService>();
 builder.Services.Configure<PayUSettings>(builder.Configuration.GetSection("PayU"));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddCors(options =>

@@ -36,12 +36,15 @@ public class MappingProfiles : Profile
             .ForMember(d => d.LocationCity, o => o.MapFrom(s => s.Location.City))
             .ForMember(d => d.LocationStreet, o => o.MapFrom(s => s.Location.Street))
             .ForMember(d => d.LocationDescription, o => o.MapFrom(s => s.Location.Description))
+            .ForMember(d => d.InstructorId, o => o.MapFrom(s =>
+                s.InstructorId ?? (s.GuestInstructorId.HasValue ? s.GuestInstructorId.Value.ToString() : string.Empty)))
             .ForMember(d => d.InstructorName, o => o.MapFrom(s =>
                 s.Instructor != null
                     ? $"{s.Instructor.Name} {s.Instructor.Surname}"
                     : s.GuestInstructor != null
                         ? $"{s.GuestInstructor.Name} {s.GuestInstructor.Surname}"
                         : string.Empty))
+            .ForMember(d => d.IsGuestInstructor, o => o.MapFrom(s => s.GuestInstructorId.HasValue))
             .ForMember(d => d.TypeOfMeetingName, o => o.MapFrom(s => s.TypeOfMeeting.Name))
             .ForMember(d => d.IsIndividual, o => o.MapFrom(s => s.TypeOfMeeting.IsIndividual))
             .ForMember(d => d.IsSolo, o => o.MapFrom(s => s.TypeOfMeeting.IsSolo))
@@ -60,12 +63,15 @@ public class MappingProfiles : Profile
             .ForMember(d => d.ImageUrl, o => o.MapFrom(s => s.TypeOfMeeting.ImageUrl))
             .ForMember(d => d.Price, o => o.MapFrom(s => s.Price))
             .ForMember(d => d.LocationName, o => o.MapFrom(s => s.Location.Name))
+            .ForMember(d => d.InstructorId, o => o.MapFrom(s =>
+                s.InstructorId ?? (s.GuestInstructorId.HasValue ? s.GuestInstructorId.Value.ToString() : string.Empty)))
             .ForMember(d => d.InstructorName, o => o.MapFrom(s =>
                 s.Instructor != null
                     ? $"{s.Instructor.Name} {s.Instructor.Surname}"
                     : s.GuestInstructor != null
                         ? $"{s.GuestInstructor.Name} {s.GuestInstructor.Surname}"
                         : string.Empty))
+            .ForMember(d => d.IsGuestInstructor, o => o.MapFrom(s => s.GuestInstructorId.HasValue))
             .ForMember(d => d.IsEvent, o => o.MapFrom(_ => true));
  
         CreateMap<CreateMeetingDto, Meeting>();
@@ -109,6 +115,19 @@ public class MappingProfiles : Profile
             .ForMember(d => d.TikTokLink,
                 o => o.MapFrom(s => s.InstructorProfile != null ? s.InstructorProfile.TikTokLink : null));
 
+        CreateMap<User, CombinedInstructorDto>()
+            .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+            .ForMember(d => d.IsGuest, o => o.MapFrom(_ => false))
+            .ForMember(d => d.InstructorType, o => o.MapFrom(_ => "regular"))
+            .ForMember(d => d.Email, o => o.MapFrom(s => s.Email))
+            .ForMember(d => d.Bio, o => o.MapFrom(s => s.InstructorProfile != null ? s.InstructorProfile.Bio : null))
+            .ForMember(d => d.ExperienceYears, o => o.MapFrom(s => s.InstructorProfile != null ? s.InstructorProfile.ExperienceYears : null))
+            .ForMember(d => d.Specialization, o => o.MapFrom(s => s.InstructorProfile != null ? s.InstructorProfile.Specialization : null))
+            .ForMember(d => d.FacebookLink, o => o.MapFrom(s => s.InstructorProfile != null ? s.InstructorProfile.FacebookLink : null))
+            .ForMember(d => d.InstagramLink, o => o.MapFrom(s => s.InstructorProfile != null ? s.InstructorProfile.InstagramLink : null))
+            .ForMember(d => d.TikTokLink, o => o.MapFrom(s => s.InstructorProfile != null ? s.InstructorProfile.TikTokLink : null))
+            .ForMember(d => d.ImageUrl, o => o.MapFrom(s => s.InstructorProfile != null ? s.InstructorProfile.ImageUrl : null));
+
         CreateMap<GuestUser, GuestInstructorDto>()
             .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
             .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
@@ -142,6 +161,50 @@ public class MappingProfiles : Profile
             .ForMember(d => d.FacebookLink, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.FacebookLink : null))
             .ForMember(d => d.InstagramLink, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.InstagramLink : null))
             .ForMember(d => d.TikTokLink, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.TikTokLink : null));
+
+        CreateMap<GuestUser, CombinedInstructorDto>()
+            .ForMember(d => d.Id, o => o.MapFrom(s => s.Id.ToString()))
+            .ForMember(d => d.IsGuest, o => o.MapFrom(_ => true))
+            .ForMember(d => d.InstructorType, o => o.MapFrom(_ => "guest"))
+            .ForMember(d => d.Email, o => o.MapFrom(s => s.Email))
+            .ForMember(d => d.Bio, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.Bio : null))
+            .ForMember(d => d.ExperienceYears, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.ExperienceYears : null))
+            .ForMember(d => d.Specialization, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.Specialization : null))
+            .ForMember(d => d.FacebookLink, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.FacebookLink : null))
+            .ForMember(d => d.InstagramLink, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.InstagramLink : null))
+            .ForMember(d => d.TikTokLink, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.TikTokLink : null))
+            .ForMember(d => d.ImageUrl, o => o.MapFrom(s => s.GuestInstructorProfile != null ? s.GuestInstructorProfile.ImageUrl : null));
+
+        CreateMap<User, CombinedUserDto>()
+            .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))
+            .ForMember(d => d.IsGuest, o => o.MapFrom(_ => false))
+            .ForMember(d => d.UserType, o => o.MapFrom(_ => "regular"))
+            .ForMember(d => d.AllowNewsletter, o => o.MapFrom(s => s.UserProfile != null ? s.UserProfile.AllowNewsletter : (bool?)null))
+            .ForMember(d => d.AllowSmsMarketing, o => o.MapFrom(s => s.UserProfile != null ? s.UserProfile.AllowSmsMarketing : (bool?)null))
+            .ForMember(d => d.Bio, o => o.MapFrom(s => s.UserProfile != null ? s.UserProfile.AboutMe : null));
+
+        CreateMap<User, AdminUserDetailsDto>()
+            .ForMember(d => d.AllowNewsletter, o => o.MapFrom(s => s.UserProfile != null && s.UserProfile.AllowNewsletter))
+            .ForMember(d => d.AllowSmsMarketing, o => o.MapFrom(s => s.UserProfile != null && s.UserProfile.AllowSmsMarketing))
+            .ForMember(d => d.Notes, o => o.Ignore());
+
+        CreateMap<GuestUser, GuestUserDto>()
+            .ForMember(d => d.AllowNewsletter, o => o.MapFrom(s => s.GuestUserProfile != null && s.GuestUserProfile.AllowNewsletter))
+            .ForMember(d => d.AllowSmsMarketing, o => o.MapFrom(s => s.GuestUserProfile != null && s.GuestUserProfile.AllowSmsMarketing))
+            .ForMember(d => d.IsPendingApproval, o => o.MapFrom(s => s.GuestUserProfile != null && s.GuestUserProfile.IsPendingApproval))
+            .ForMember(d => d.Bio, o => o.MapFrom(s => s.GuestUserProfile != null ? s.GuestUserProfile.Bio : null));
+
+        CreateMap<GuestUser, GuestUserDetailsDto>()
+            .IncludeBase<GuestUser, GuestUserDto>()
+            .ForMember(d => d.Notes, o => o.Ignore());
+
+        CreateMap<GuestUser, CombinedUserDto>()
+            .ForMember(d => d.Id, o => o.MapFrom(s => s.Id.ToString()))
+            .ForMember(d => d.IsGuest, o => o.MapFrom(_ => true))
+            .ForMember(d => d.UserType, o => o.MapFrom(_ => "guest"))
+            .ForMember(d => d.AllowNewsletter, o => o.MapFrom(s => s.GuestUserProfile != null ? s.GuestUserProfile.AllowNewsletter : (bool?)null))
+            .ForMember(d => d.AllowSmsMarketing, o => o.MapFrom(s => s.GuestUserProfile != null ? s.GuestUserProfile.AllowSmsMarketing : (bool?)null))
+            .ForMember(d => d.Bio, o => o.MapFrom(s => s.GuestUserProfile != null ? s.GuestUserProfile.Bio : null));
         
         // NewsArticle (if derives from BaseEntity, you can IncludeBase; otherwise don’t)
         CreateMap<NewsArticle, NewsArticleReadDto>()
@@ -159,5 +222,12 @@ public class MappingProfiles : Profile
         // ContactMessage
         CreateMap<ContactMessageCreateDto, ContactMessage>();
         CreateMap<ContactMessage, ContactMessageReadDto>();
+
+        CreateMap<AdminNote, AdminNoteReadDto>()
+            .IncludeBase<BaseEntity, BaseReadDto>();
+
+        CreateMap<Meeting, MeetingDetailsDto>()
+            .IncludeBase<Meeting, MeetingDto>()
+            .ForMember(d => d.Notes, o => o.Ignore());
     }
 }

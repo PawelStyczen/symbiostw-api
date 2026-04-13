@@ -13,6 +13,10 @@ public class GuestUserProfile
 
     public bool AllowNewsletter { get; set; } = true;
 
+    public bool AllowSmsMarketing { get; set; } = false;
+
+    public bool IsPendingApproval { get; set; } = false;
+
     [MaxLength(2000)]
     public string? Bio { get; set; }
 }

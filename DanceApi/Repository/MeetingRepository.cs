@@ -58,6 +58,7 @@ namespace DanceApi.Repository
                     Duration = m.Duration,
                     LocationId = m.LocationId,
                     InstructorId = m.InstructorId,
+                    GuestInstructorId = m.GuestInstructorId,
                     TypeOfMeetingId = m.TypeOfMeetingId,
                     Price = m.Price,
                     Level = m.Level,
@@ -100,6 +101,7 @@ namespace DanceApi.Repository
                 Duration = m.Duration,
                 LocationId = m.LocationId,
                 InstructorId = m.InstructorId,
+                GuestInstructorId = m.GuestInstructorId,
                 TypeOfMeetingId = m.TypeOfMeetingId,
                 Price = m.Price,
                 Level = m.Level,
@@ -121,6 +123,7 @@ namespace DanceApi.Repository
                 .Include(m => m.Location)
                 .Include(m => m.TypeOfMeeting)
                 .Include(m => m.Instructor)
+                .Include(m => m.GuestInstructor)
                 .ToListAsync();
         }
         public async Task<List<Meeting>> GetMeetingsByInstructorIdAsync(string instructorId)
@@ -129,7 +132,8 @@ namespace DanceApi.Repository
                 .Where(m => m.InstructorId == instructorId)
                 .Include(m => m.Location)  
                 .Include(m => m.TypeOfMeeting)  
-                .Include(m => m.Instructor)  
+                .Include(m => m.Instructor)
+                .Include(m => m.GuestInstructor)
                 .ToListAsync();
         }
         public async Task<Meeting?> GetMeetingByIdAsync(int id)
@@ -138,8 +142,11 @@ namespace DanceApi.Repository
                 .Include(m => m.Location)
                 .Include(m => m.TypeOfMeeting)
                 .Include(m => m.Instructor)
+                .Include(m => m.GuestInstructor)
                 .Include(m => m.MeetingParticipants)
                 .ThenInclude(mp => mp.User)
+                .Include(m => m.MeetingGuestParticipants)
+                .ThenInclude(mgp => mgp.GuestUser)
                 .FirstOrDefaultAsync(m => m.Id == id);
         }
         
@@ -151,6 +158,7 @@ namespace DanceApi.Repository
                 .Where(m => m.MeetingParticipants.Any(p => p.UserId == userId) && m.Date > currentDate) 
                 .OrderByDescending(m => m.Date) 
                 .Include(m => m.Instructor)  
+                .Include(m => m.GuestInstructor)
                 .Include(m => m.Location)    
                 .Include(m => m.TypeOfMeeting)
                 .ToListAsync();
@@ -201,8 +209,9 @@ namespace DanceApi.Repository
         public async Task<bool> AddParticipantToMeetingAsync(int meetingId, string userId)
         {
             var meeting = await _context.Meetings.Include(m => m.MeetingParticipants).FirstOrDefaultAsync(m => m.Id == meetingId);
+            var userExists = await _context.Users.AnyAsync(u => u.Id == userId && !u.IsDeleted);
 
-            if (meeting == null || meeting.MeetingParticipants.Any(mp => mp.UserId == userId))
+            if (meeting == null || !userExists || meeting.MeetingParticipants.Any(mp => mp.UserId == userId))
             {
                 return false; 
             }
@@ -212,6 +221,28 @@ namespace DanceApi.Repository
                 MeetingId = meetingId,
                 UserId = userId
             });
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> AddGuestParticipantToMeetingAsync(int meetingId, int guestUserId)
+        {
+            var meeting = await _context.Meetings
+                .Include(m => m.MeetingGuestParticipants)
+                .FirstOrDefaultAsync(m => m.Id == meetingId);
+            var guestUserExists = await _context.GuestUsers.AnyAsync(g => g.Id == guestUserId && !g.IsDeleted);
+
+            if (meeting == null || !guestUserExists || meeting.MeetingGuestParticipants.Any(mgp => mgp.GuestUserId == guestUserId))
+            {
+                return false;
+            }
+
+            meeting.MeetingGuestParticipants.Add(new MeetingGuestParticipant
+            {
+                MeetingId = meetingId,
+                GuestUserId = guestUserId
+            });
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -230,14 +261,43 @@ namespace DanceApi.Repository
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> RemoveGuestParticipantFromMeetingAsync(int meetingId, int guestUserId)
+        {
+            var participant = await _context.MeetingGuestParticipants
+                .FirstOrDefaultAsync(mgp => mgp.MeetingId == meetingId && mgp.GuestUserId == guestUserId);
+
+            if (participant == null)
+            {
+                return false;
+            }
+
+            _context.MeetingGuestParticipants.Remove(participant);
+            await _context.SaveChangesAsync();
+            return true;
+        }
         
         public async Task<IEnumerable<Meeting>> GetMeetingsByUserIdAsync(string userId)
         {
             return await _context.Meetings
                 .Where(m => m.MeetingParticipants.Any(p => p.UserId == userId))
                 .Include(m => m.Instructor)  // Eager load Instructor
+                .Include(m => m.GuestInstructor)
                 .Include(m => m.Location)    // Eager load Location if needed
                 .Include(m => m.TypeOfMeeting)
+                .Include(m => m.MeetingParticipants)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Meeting>> GetMeetingsByGuestUserIdAsync(int guestUserId)
+        {
+            return await _context.Meetings
+                .Where(m => m.MeetingGuestParticipants.Any(p => p.GuestUserId == guestUserId))
+                .Include(m => m.Instructor)
+                .Include(m => m.GuestInstructor)
+                .Include(m => m.Location)
+                .Include(m => m.TypeOfMeeting)
+                .Include(m => m.MeetingGuestParticipants)
                 .ToListAsync();
         }
         

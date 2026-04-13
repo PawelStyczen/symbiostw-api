@@ -1,4 +1,5 @@
 using DanceApi.Interface;
+using DanceApi.Helper;
 using DanceApi.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,13 +12,18 @@ namespace DanceApi.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private readonly IAuditLogService _auditLogService;
         private readonly IUserRepository _userRepository;
         private readonly SignInManager<User> _signInManager;
 
-        public AccountController(IUserRepository userRepository, SignInManager<User> signInManager)
+        public AccountController(
+            IUserRepository userRepository,
+            SignInManager<User> signInManager,
+            IAuditLogService auditLogService)
         {
             _userRepository = userRepository;
             _signInManager = signInManager;
+            _auditLogService = auditLogService;
         }
 
         // POST: api/Account/Register
@@ -33,15 +39,44 @@ namespace DanceApi.Controllers
                 Email = model.Email,
                 Name = model.Name,
                 Surname = model.Surname,
-       
+                PhoneNumber = string.IsNullOrWhiteSpace(model.PhoneNumber) ? null : model.PhoneNumber.Trim()
             };
 
             var result = await _userRepository.CreateUserAsync(user, model.Password);
             if (result.Succeeded)
             {
+                _userRepository.AddUserProfile(new UserProfile
+                {
+                    UserId = user.Id,
+                    AllowNewsletter = model.AllowNewsletter,
+                    AllowSmsMarketing = model.AllowSmsMarketing,
+                    AboutMe = string.Empty
+                });
+                await _userRepository.SaveChangesAsync();
+
                 var roleResult = await _userRepository.AddUserToRoleAsync(user, "User");
                 if (roleResult)
                 {
+                    var changes = new AuditChangeSetBuilder()
+                        .AddCreated("name", user.Name)
+                        .AddCreated("surname", user.Surname)
+                        .AddCreated("email", user.Email)
+                        .AddCreated("phoneNumber", user.PhoneNumber)
+                        .AddCreated("allowNewsletter", model.AllowNewsletter)
+                        .AddCreated("allowSmsMarketing", model.AllowSmsMarketing)
+                        .Build();
+
+                    await _auditLogService.WriteAsync(new AuditWriteRequest
+                    {
+                        TargetType = AuditLogTargetType.User,
+                        TargetId = user.Id,
+                        ActionType = AuditLogActionType.Created,
+                        SourceType = AuditLogSourceType.PublicRequest,
+                        Actor = AuditActorInfo.PublicRequest(user.Email),
+                        Changes = changes,
+                        Reason = "Regular user registered via public account endpoint."
+                    });
+
                     return Ok("User registered successfully.");
                 }
                 else
