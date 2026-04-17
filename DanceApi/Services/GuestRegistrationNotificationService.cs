@@ -199,7 +199,16 @@ $"""
       <li><strong>Spotkanie:</strong> {meetingType}</li>
       <li><strong>Termin:</strong> {meetingDate}</li>
       <li><strong>Miejsce:</strong> {locationDisplay}</li>
+      <li><strong>Cena:</strong> {meeting.Price} PLN</li>
     </ul>
+
+    <p>prosimy o dokonanie płatności na:</p>
+    <ul>
+      <li>numer konta: <strong>36 1140 2004 0000 3002 7666 3697</strong> tytułem: {meetingType} {meetingDate:ddMMyyyy} {guestName}</li>
+      <li>przelewem na telefon: <strong>666 617 974</strong> tytułem: {meetingType} {meetingDate:ddMMyyyy} {guestName}</li>
+      <li>lub osobiście u organizatora na spotkaniu.</li>
+    </ul>
+
     <p>Do zobaczenia,<br />{teamName}</p>
   </body>
 </html>
@@ -215,13 +224,14 @@ $"""
         return
 $@"Czesc {guestName},
 
-Niestety Twoje zgloszenie na spotkanie nie zostalo zaakceptowane.
+Niestety Twoje zgloszenie na spotkanie nie zostalo zaakceptowane z powodu braku wolnych miejsc.
 
 Szczegoly spotkania:
 - Spotkanie: {meetingType}
 - Termin: {meetingDate}
 
 W razie pytan skontaktuj sie z nami.
+zapraszamy do sledzenia naszej oferty na stronie internetowej i mediach spolecznosciowych, gdzie regularnie informujemy o nowych spotkaniach i wydarzeniach.
 
 Pozdrawiamy,
 {senderName}";
@@ -239,13 +249,14 @@ $"""
 <html>
   <body style="font-family: Arial, sans-serif; color: #1f2937; line-height: 1.6;">
     <p>Czesc {guestName},</p>
-    <p>Niestety Twoje zgloszenie na spotkanie nie zostalo zaakceptowane.</p>
+    <p>Niestety Twoje zgloszenie na spotkanie nie zostalo zaakceptowane z powodu braku wolnych miejsc.</p>
     <p>Szczegoly spotkania:</p>
     <ul>
       <li><strong>Spotkanie:</strong> {meetingType}</li>
       <li><strong>Termin:</strong> {meetingDate}</li>
     </ul>
     <p>W razie pytan skontaktuj sie z nami.</p>
+    <p>zapraszamy do sledzenia naszej oferty na stronie internetowej i mediach spolecznosciowych, gdzie regularnie informujemy o nowych spotkaniach i wydarzeniach.</p>
     <p>Pozdrawiamy,<br />{teamName}</p>
   </body>
 </html>
