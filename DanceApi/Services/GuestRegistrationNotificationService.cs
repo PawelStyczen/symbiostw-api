@@ -168,8 +168,8 @@ Szczegoly spotkania:
 - Cena: {meeting.Price} PLN
 
 prosimy o dokonanie płatności na:
-- numer konta: 36 1140 2004 0000 3002 7666 3697 tytułem: {meetingType} {meetingDate:ddMMyyyy} {guestName}
-- przelewem na telefon: 666 617 974 tytułem: {meetingType} {meetingDate:ddMMyyyy} {guestName}
+- numer konta: 36 1140 2004 0000 3002 7666 3697 tytułem: Wydarzenie {guestName}
+- przelewem na telefon: 666 617 974 tytułem: Wydarzenie  {guestName}
 - lub osobiście u organizatora na spotkaniu.
 
 Do zobaczenia,
@@ -204,8 +204,8 @@ $"""
 
     <p>prosimy o dokonanie płatności na:</p>
     <ul>
-      <li>numer konta: <strong>36 1140 2004 0000 3002 7666 3697</strong> tytułem: {meetingType} {meetingDate:ddMMyyyy} {guestName}</li>
-      <li>przelewem na telefon: <strong>666 617 974</strong> tytułem: {meetingType} {meetingDate:ddMMyyyy} {guestName}</li>
+      <li>numer konta: <strong>36 1140 2004 0000 3002 7666 3697</strong> tytułem: Wydarzenie {guestName}</li>
+      <li>przelewem na telefon: <strong>666 617 974</strong> tytułem: Wydarzenie  {guestName}</li>
       <li>lub osobiście u organizatora na spotkaniu.</li>
     </ul>
 
