@@ -223,6 +223,18 @@ public class MappingProfiles : Profile
         CreateMap<ContactMessageCreateDto, ContactMessage>();
         CreateMap<ContactMessage, ContactMessageReadDto>();
 
+        CreateMap<Lead, LeadReadDto>()
+            .IncludeBase<BaseEntity, BaseReadDto>()
+            .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.ToString()))
+            .ForMember(d => d.ConvertedGuestUserName, o => o.MapFrom(s =>
+                s.ConvertedGuestUser != null
+                    ? $"{s.ConvertedGuestUser.Name} {s.ConvertedGuestUser.Surname}"
+                    : null));
+
+        CreateMap<Lead, LeadDetailsDto>()
+            .IncludeBase<Lead, LeadReadDto>()
+            .ForMember(d => d.Notes, o => o.Ignore());
+
         CreateMap<AdminNote, AdminNoteReadDto>()
             .IncludeBase<BaseEntity, BaseReadDto>();
 

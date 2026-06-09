@@ -33,6 +33,7 @@ namespace DanceApi.Data
         public DbSet<NotificationLog> NotificationLogs { get; set; }
         public DbSet<AdminNote> AdminNotes { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<Lead> Leads { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -60,6 +61,7 @@ namespace DanceApi.Data
             ConfigureBaseEntityRelationships<MembershipPlan>(modelBuilder);
             ConfigureBaseEntityRelationships<UserMembership>(modelBuilder);
             ConfigureBaseEntityRelationships<AdminNote>(modelBuilder);
+            ConfigureBaseEntityRelationships<Lead>(modelBuilder);
 
             modelBuilder.Entity<MeetingParticipant>()
                 .HasOne(mp => mp.Meeting)
@@ -147,6 +149,24 @@ namespace DanceApi.Data
                 .HasOne(gip => gip.GuestUser)
                 .WithOne(gu => gu.GuestInstructorProfile)
                 .HasForeignKey<GuestInstructorProfile>(gip => gip.GuestUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Lead>()
+                .HasIndex(lead => lead.NormalizedEmail);
+
+            modelBuilder.Entity<Lead>()
+                .HasIndex(lead => lead.Status);
+
+            modelBuilder.Entity<Lead>()
+                .HasIndex(lead => lead.CreatedDate);
+
+            modelBuilder.Entity<Lead>()
+                .HasIndex(lead => lead.GroupName);
+
+            modelBuilder.Entity<Lead>()
+                .HasOne(lead => lead.ConvertedGuestUser)
+                .WithMany()
+                .HasForeignKey(lead => lead.ConvertedGuestUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<NotificationLog>()

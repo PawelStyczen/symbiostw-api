@@ -8,7 +8,8 @@ public enum AuditLogTargetType
     User = 1,
     GuestUser = 2,
     MeetingGuestParticipant = 3,
-    Meeting = 4
+    Meeting = 4,
+    Lead = 5
 }
 
 public enum AuditLogActionType
