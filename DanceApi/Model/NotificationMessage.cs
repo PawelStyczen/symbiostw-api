@@ -19,6 +19,8 @@ public class NotificationMessage
     public int? GuestUserId { get; set; }
 
     public int? MeetingId { get; set; }
+
+    public int? LeadId { get; set; }
 }
 
 public class NotificationDispatchResult

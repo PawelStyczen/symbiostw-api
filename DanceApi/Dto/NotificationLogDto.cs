@@ -18,6 +18,8 @@ public class NotificationLogListItemDto
     public int? MeetingId { get; set; }
     public string? MeetingName { get; set; }
     public DateTime? MeetingDateUtc { get; set; }
+    public int? LeadId { get; set; }
+    public string? LeadName { get; set; }
 }
 
 public class NotificationLogDetailsDto : NotificationLogListItemDto

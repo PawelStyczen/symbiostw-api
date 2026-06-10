@@ -12,7 +12,8 @@ public enum NotificationKind
 {
     MeetingRegistrationPendingApproval = 0,
     MeetingRegistrationAccepted = 1,
-    MeetingRegistrationRejected = 2
+    MeetingRegistrationRejected = 2,
+    NewLeadReceived = 3
 }
 
 public enum NotificationStatus
@@ -61,4 +62,7 @@ public class NotificationLog
 
     public int? MeetingId { get; set; }
     public Meeting? Meeting { get; set; }
+
+    public int? LeadId { get; set; }
+    public Lead? Lead { get; set; }
 }

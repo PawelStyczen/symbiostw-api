@@ -204,11 +204,13 @@ public class AdminNoteController : BaseController
             return false;
         }
 
-        if (targetType == AdminNoteTargetType.Meeting || targetType == AdminNoteTargetType.Event)
+        if (targetType == AdminNoteTargetType.Meeting ||
+            targetType == AdminNoteTargetType.Event ||
+            targetType == AdminNoteTargetType.Lead)
         {
             if (!int.TryParse(normalizedTargetId, out var parsedId))
             {
-                error = "TargetId must be a valid integer for meetings and events.";
+                error = "TargetId must be a valid integer for meetings, events, and leads.";
                 return false;
             }
 
@@ -229,6 +231,7 @@ public class AdminNoteController : BaseController
             AdminNoteTargetType.User => await UserExistsAsync(normalizedTargetId),
             AdminNoteTargetType.Meeting => await MeetingExistsAsync(normalizedTargetId, requireEvent: false),
             AdminNoteTargetType.Event => await MeetingExistsAsync(normalizedTargetId, requireEvent: true),
+            AdminNoteTargetType.Lead => await LeadExistsAsync(normalizedTargetId),
             _ => false
         };
     }
@@ -255,5 +258,15 @@ public class AdminNoteController : BaseController
             .AnyAsync(meeting =>
                 meeting.Id == meetingId &&
                 (!requireEvent || (meeting.TypeOfMeeting != null && meeting.TypeOfMeeting.IsEvent)));
+    }
+
+    private async Task<bool> LeadExistsAsync(string targetId)
+    {
+        if (!int.TryParse(targetId, out var leadId))
+        {
+            return false;
+        }
+
+        return await _context.Leads.AnyAsync(lead => lead.Id == leadId);
     }
 }

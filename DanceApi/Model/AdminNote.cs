@@ -6,7 +6,8 @@ public enum AdminNoteTargetType
 {
     User = 1,
     Meeting = 2,
-    Event = 3
+    Event = 3,
+    Lead = 4
 }
 
 public class AdminNote : BaseEntity

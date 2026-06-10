@@ -92,6 +92,7 @@ public class AdminNotificationLogController : ControllerBase
         return _context.NotificationLogs
             .AsNoTracking()
             .Include(log => log.GuestUser)
+            .Include(log => log.Lead)
             .Include(log => log.Meeting)
             .ThenInclude(meeting => meeting.TypeOfMeeting);
     }
@@ -115,7 +116,9 @@ public class AdminNotificationLogController : ControllerBase
             GuestUserName = log.GuestUser != null ? log.GuestUser.Name + " " + log.GuestUser.Surname : null,
             MeetingId = log.MeetingId,
             MeetingName = log.Meeting != null ? log.Meeting.TypeOfMeeting.Name : null,
-            MeetingDateUtc = log.Meeting != null ? log.Meeting.Date : null
+            MeetingDateUtc = log.Meeting != null ? log.Meeting.Date : null,
+            LeadId = log.LeadId,
+            LeadName = log.Lead != null ? log.Lead.Name + " " + log.Lead.Surname : null
         };
     }
 
@@ -139,6 +142,8 @@ public class AdminNotificationLogController : ControllerBase
             MeetingId = log.MeetingId,
             MeetingName = log.Meeting != null ? log.Meeting.TypeOfMeeting.Name : null,
             MeetingDateUtc = log.Meeting != null ? log.Meeting.Date : null,
+            LeadId = log.LeadId,
+            LeadName = log.Lead != null ? log.Lead.Name + " " + log.Lead.Surname : null,
             PlainTextContent = log.PlainTextContent,
             HtmlContent = log.HtmlContent
         };
