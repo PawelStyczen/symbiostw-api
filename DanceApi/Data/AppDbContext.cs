@@ -188,6 +188,9 @@ namespace DanceApi.Data
                 .HasIndex(log => log.Status);
 
             modelBuilder.Entity<NotificationLog>()
+                .HasIndex(log => log.LeadId);
+
+            modelBuilder.Entity<NotificationLog>()
                 .HasOne(log => log.GuestUser)
                 .WithMany()
                 .HasForeignKey(log => log.GuestUserId)
@@ -197,6 +200,12 @@ namespace DanceApi.Data
                 .HasOne(log => log.Meeting)
                 .WithMany()
                 .HasForeignKey(log => log.MeetingId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<NotificationLog>()
+                .HasOne(log => log.Lead)
+                .WithMany()
+                .HasForeignKey(log => log.LeadId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<AdminNote>()

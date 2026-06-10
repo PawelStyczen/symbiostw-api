@@ -22,7 +22,7 @@ namespace DanceApi.Migrations
                     PhoneNumber = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    WantsEmailInformation = table.Column<bool>(type: "bit", nullable: false),
+                    AllowsEmailMarketing = table.Column<bool>(type: "bit", nullable: false),
                     AllowsNewsletterAndSmsMarketing = table.Column<bool>(type: "bit", nullable: false),
                     GroupName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     AdditionalMessage = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),

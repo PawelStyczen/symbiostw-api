@@ -36,7 +36,8 @@ public class NotificationDispatcher : INotificationDispatcher
             RequestedAtUtc = now,
             LastUpdatedAtUtc = now,
             GuestUserId = message.GuestUserId,
-            MeetingId = message.MeetingId
+            MeetingId = message.MeetingId,
+            LeadId = message.LeadId
         };
 
         _context.NotificationLogs.Add(log);

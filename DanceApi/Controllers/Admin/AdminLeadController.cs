@@ -39,6 +39,10 @@ public class AdminLeadController : BaseController
         [FromQuery] string? group = null,
         [FromQuery] bool includeDeleted = false)
     {
+        var userId = GetUserId();
+        if (string.IsNullOrWhiteSpace(userId))
+            return Unauthorized();
+
         if (includeDeleted && !User.IsInRole("Admin"))
             return Forbid();
 
@@ -78,7 +82,10 @@ public class AdminLeadController : BaseController
             .OrderByDescending(lead => lead.CreatedDate)
             .ToListAsync();
 
-        return Ok(_mapper.Map<List<LeadReadDto>>(leads));
+        var dto = _mapper.Map<List<LeadReadDto>>(leads);
+        await AttachLatestNotesAsync(dto, userId);
+
+        return Ok(dto);
     }
 
     [HttpGet("{id:int}")]
@@ -99,6 +106,7 @@ public class AdminLeadController : BaseController
             AdminNoteTargetType.Lead,
             lead.Id.ToString(),
             userId);
+        dto.LatestNote = dto.Notes.FirstOrDefault();
 
         return Ok(dto);
     }
@@ -205,7 +213,7 @@ public class AdminLeadController : BaseController
 
         var now = DateTime.UtcNow;
         var createdGuestUser = false;
-        var allowNewsletter = lead.WantsEmailInformation || lead.AllowsNewsletterAndSmsMarketing;
+        var allowNewsletter = lead.AllowsEmailMarketing || lead.AllowsNewsletterAndSmsMarketing;
         var allowSmsMarketing = lead.AllowsNewsletterAndSmsMarketing;
         var guestUserChanges = new AuditChangeSetBuilder();
         var previousLeadStatus = lead.Status;
@@ -345,6 +353,39 @@ public class AdminLeadController : BaseController
             .Include(lead => lead.ConvertedGuestUser);
     }
 
+    private async Task AttachLatestNotesAsync(List<LeadReadDto> leads, string userId)
+    {
+        if (leads.Count == 0)
+            return;
+
+        var leadIds = leads
+            .Select(lead => lead.Id.ToString())
+            .ToList();
+
+        var latestNotes = await _context.AdminNotes
+            .AsNoTracking()
+            .Include(note => note.CreatedBy)
+            .Include(note => note.UpdatedBy)
+            .Where(note =>
+                note.CreatedById == userId &&
+                note.TargetType == AdminNoteTargetType.Lead &&
+                leadIds.Contains(note.TargetId))
+            .OrderByDescending(note => note.UpdatedDate ?? note.CreatedDate)
+            .ToListAsync();
+
+        var latestNotesByLeadId = latestNotes
+            .GroupBy(note => note.TargetId)
+            .ToDictionary(
+                group => group.Key,
+                group => _mapper.Map<AdminNoteReadDto>(group.First()));
+
+        foreach (var lead in leads)
+        {
+            latestNotesByLeadId.TryGetValue(lead.Id.ToString(), out var latestNote);
+            lead.LatestNote = latestNote;
+        }
+    }
+
     private async Task<IActionResult> GetLeadDetailsResultAsync(int leadId, string userId)
     {
         var lead = await GetLeadDetailsQuery()
@@ -359,6 +400,7 @@ public class AdminLeadController : BaseController
             AdminNoteTargetType.Lead,
             lead.Id.ToString(),
             userId);
+        dto.LatestNote = dto.Notes.FirstOrDefault();
 
         return Ok(dto);
     }

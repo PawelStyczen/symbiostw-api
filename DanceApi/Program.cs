@@ -116,8 +116,10 @@ builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 builder.Services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
 builder.Services.AddScoped<INotificationChannelSender, AzureCommunicationEmailNotificationSender>();
 builder.Services.AddScoped<IGuestRegistrationNotificationService, GuestRegistrationNotificationService>();
+builder.Services.AddScoped<ILeadNotificationService, LeadNotificationService>();
 builder.Services.Configure<PayUSettings>(builder.Configuration.GetSection("PayU"));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
+builder.Services.Configure<LeadNotificationSettings>(builder.Configuration.GetSection("LeadNotifications"));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddCors(options =>

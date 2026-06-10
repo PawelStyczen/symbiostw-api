@@ -34,7 +34,7 @@ public class Lead : BaseEntity
     [MaxLength(256)]
     public string NormalizedEmail { get; set; } = string.Empty;
 
-    public bool WantsEmailInformation { get; set; }
+    public bool AllowsEmailMarketing { get; set; }
 
     public bool AllowsNewsletterAndSmsMarketing { get; set; }
 

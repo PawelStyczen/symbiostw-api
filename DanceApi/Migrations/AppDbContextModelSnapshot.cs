@@ -430,6 +430,9 @@ namespace DanceApi.Migrations
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(4000)");
 
+                    b.Property<bool>("AllowsEmailMarketing")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("AllowsNewsletterAndSmsMarketing")
                         .HasColumnType("bit");
 
@@ -494,9 +497,6 @@ namespace DanceApi.Migrations
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("WantsEmailInformation")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -932,6 +932,9 @@ namespace DanceApi.Migrations
                     b.Property<DateTime>("LastUpdatedAtUtc")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("LeadId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("MeetingId")
                         .HasColumnType("int");
 
@@ -970,6 +973,8 @@ namespace DanceApi.Migrations
                     b.HasIndex("GuestUserId");
 
                     b.HasIndex("Kind");
+
+                    b.HasIndex("LeadId");
 
                     b.HasIndex("MeetingId");
 
@@ -1849,12 +1854,19 @@ namespace DanceApi.Migrations
                         .HasForeignKey("GuestUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("DanceApi.Model.Lead", "Lead")
+                        .WithMany()
+                        .HasForeignKey("LeadId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("DanceApi.Model.Meeting", "Meeting")
                         .WithMany()
                         .HasForeignKey("MeetingId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("GuestUser");
+
+                    b.Navigation("Lead");
 
                     b.Navigation("Meeting");
                 });

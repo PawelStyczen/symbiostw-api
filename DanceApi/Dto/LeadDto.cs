@@ -26,8 +26,8 @@ public class LeadCreateDto
     [JsonPropertyName("email")]
     public string Email { get; set; } = string.Empty;
 
-    [JsonPropertyName("chceOtrzymywacInformacjeEmail")]
-    public bool WantsEmailInformation { get; set; }
+    [JsonPropertyName("chceotrzymywacemailmarketing")]
+    public bool AllowsEmailMarketing { get; set; }
 
     [JsonPropertyName("chceOtrzymywacNewsletterISmsMarketing")]
     public bool AllowsNewsletterAndSmsMarketing { get; set; }
@@ -49,7 +49,7 @@ public class LeadReadDto : BaseReadDto
     public string Surname { get; set; } = string.Empty;
     public string? PhoneNumber { get; set; }
     public string Email { get; set; } = string.Empty;
-    public bool WantsEmailInformation { get; set; }
+    public bool AllowsEmailMarketing { get; set; }
     public bool AllowsNewsletterAndSmsMarketing { get; set; }
     public string GroupName { get; set; } = string.Empty;
     public string? AdditionalMessage { get; set; }
@@ -59,6 +59,7 @@ public class LeadReadDto : BaseReadDto
     public int? ConvertedGuestUserId { get; set; }
     public string? ConvertedGuestUserName { get; set; }
     public bool IsDeleted { get; set; }
+    public AdminNoteReadDto? LatestNote { get; set; }
 }
 
 public class LeadDetailsDto : LeadReadDto
